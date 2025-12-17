@@ -140,26 +140,6 @@ extension Contact {
         }
     }
     
-    /// Returns an overlay opacity that increases as the contact ages (subtle but noticeable)
-    var agingOverlayOpacity: Double {
-        let daysSince = Calendar.current.dateComponents([.day], from: lastContacted, to: Date()).day ?? 0
-        
-        switch daysSince {
-        case 0...1:
-            return 0.15     // Recent: very subtle
-        case 2...3:
-            return 0.20     // Still warm
-        case 4...7:
-            return 0.25     // Starting to fade
-        case 8...14:
-            return 0.35     // Clearly aging
-        case 15...30:
-            return 0.45     // Very noticeable
-        default:
-            return 0.55     // Needs attention
-        }
-    }
-    
     /// Returns saturation level that decreases as contact ages (1.0 = full color, 0.0 = grayscale)
     var agingSaturation: Double {
         let daysSince = Calendar.current.dateComponents([.day], from: lastContacted, to: Date()).day ?? 0
@@ -168,15 +148,34 @@ extension Contact {
         case 0...1:
             return 1.0      // Full saturation - vibrant!
         case 2...3:
-            return 0.95     // Slightly less saturated
+            return 0.90     // Slightly less saturated
         case 4...7:
-            return 0.80     // Noticeably desaturating
+            return 0.75     // Noticeably desaturating
         case 8...14:
             return 0.60     // More gray
-        case 15...30:
-            return 0.35     // Very desaturated
+        case 15...:
+            return 0.25     // Very desaturated
         default:
             return 0.15     // Almost grayscale
+        }
+    }
+    
+    var agingOpacity: Double {
+        let daysSince = Calendar.current.dateComponents([.day], from: lastContacted, to: Date()).day ?? 0
+        
+        switch daysSince {
+        case 0...1:
+            return 1.0      // Full saturation - vibrant!
+        case 2...3:
+            return 0.90     // Slightly less saturated
+        case 4...7:
+            return 0.75     // Noticeably desaturating
+        case 8...14:
+            return 0.60     // More gray
+        case 15...:
+            return 0.30     // Very desaturated
+        default:
+            return 1
         }
     }
     

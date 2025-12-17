@@ -16,13 +16,15 @@ struct ContactCardView: View {
             GeometryReader { geometry in
                 ZStack {
                     // Background image or placeholder
-                    if let image = contact.image {
-                        Image(image)
+                    if let imageData = contact.imageData,
+                       let uiImage = UIImage(data:imageData) {
+                        Image(uiImage: uiImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: geometry.size.width, height: geometry.size.height)
                             .clipped()
                             .saturation(contact.agingSaturation) // Desaturate as contact ages
+                            .opacity(contact.agingOpacity)
                     } else {
                         // Placeholder background with design system color
                         contact.agingColor.opacity(0.2)
@@ -35,13 +37,8 @@ struct ContactCardView: View {
                             .foregroundStyle(contact.agingColor.opacity(0.4))
                     }
                     
-                    // Visual aging overlay (shifts from warm to cool based on contact recency)
-                    contact.agingColor
-                        .opacity(contact.agingOverlayOpacity)
-                        .blendMode(.multiply)
-                    
                     // Strong gradient overlay for text readability (only with photos)
-                    if contact.image != nil {
+                    if contact.imageData != nil {
                         LinearGradient(
                             colors: [
                                 .black.opacity(0.7),
@@ -60,7 +57,7 @@ struct ContactCardView: View {
                         // Name
                         Text(contact.name)
                             .font(.keetHeadline)
-                            .foregroundStyle(contact.image != nil ? .white : contact.agingTextColor)
+                            .foregroundStyle(contact.imageData != nil ? .white : contact.agingTextColor)
                             .lineLimit(2)
                             .minimumScaleFactor(0.8)
                             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
@@ -68,7 +65,7 @@ struct ContactCardView: View {
                         // Contextual time (human-readable)
                         Text(contact.lastContactedText)
                             .font(.keetCaption)
-                            .foregroundStyle((contact.image != nil ? Color.white : contact.agingTextColor).opacity(0.9))
+                            .foregroundStyle((contact.imageData != nil ? Color.white : contact.agingTextColor).opacity(0.9))
                             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                             .padding(.top, 2)
                     }
@@ -88,15 +85,3 @@ struct ContactCardView: View {
     }
 }
 
-#Preview {
-    HStack(spacing: 12) {
-        ContactCardView(contact: Contact.examples[2]) {
-            print("Tapped")
-        }
-//        ContactCardView(contact: Contact.examples[3]) {
-//            print("Tapped")
-//        }
-        
-    }
-    .padding()
-}

@@ -14,7 +14,38 @@ struct ContentView: View {
     @State private var isShowingContactImport: Bool = false
     @State private var isShowingManualEntry: Bool = false
     
-    // Using design system spacing tokens
+    private var emptyStateView: some View {
+        ContentUnavailableView(
+            "No Contacts",
+            systemImage: "person.crop.circle.badge.plus",
+            description: Text("Tap the + button to add your first contact")
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .foregroundStyle(.warmBrown)
+        .symbolRenderingMode(.hierarchical)
+        .symbolEffect(.bounce, value: contacts.list.isEmpty)
+    }
+    
+    private func handleImportedContact(_ cnContact: CNContact) {
+        let fullName = "\(cnContact.givenName) \(cnContact.familyName)"
+            .trimmingCharacters(in: .whitespaces)
+
+        let imageData = cnContact.thumbnailImageData
+
+        let newContact = Contact(
+            name: fullName.isEmpty ? "Unknown" : fullName,
+            imageData: imageData
+        )
+        contacts.addContact(newContact)
+        isShowingContactImport = false
+    }
+    
+    private func handleManualEntry(_ name: String, image: Data? = nil) {
+        let newContact = Contact(name: name, imageData: image)
+        contacts.addContact(newContact)
+        isShowingManualEntry = false
+    }
+    
     let columns = [
         GridItem(.flexible(), spacing: .keetSpacingL),
         GridItem(.flexible(), spacing: .keetSpacingL)
@@ -29,7 +60,6 @@ struct ContentView: View {
                     LazyVGrid(columns: columns, spacing: .keetSpacingM) {
                         ForEach(contacts.list) { contact in
                             ContactCardView(contact: contact) {
-                                // Using design system animation
                                 withAnimation(.keetSpring) {
                                     contacts.updateLastContacted(for: contact)
                                 }
@@ -56,7 +86,7 @@ struct ContentView: View {
             }
             .padding(.trailing, .keetSpacingL)
             .padding(.bottom, .keetSpacingL)
-            .background(Color.softCream) // Design system background color
+            .background(Color.softCream)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
@@ -82,37 +112,12 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $isShowingManualEntry) {
-                ManualEntryView { name in
-                    handleManualEntry(name)
+                ManualEntryView { name,image in
+                    handleManualEntry(name,image: image)
                 }
             }
         }
         .tint(.terracotta) // Sets the accent color for the entire NavigationStack
-    }
-    
-    private var emptyStateView: some View {
-        ContentUnavailableView(
-            "No Contacts",
-            systemImage: "person.crop.circle.badge.plus",
-            description: Text("Tap the + button to add your first contact")
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .foregroundStyle(.warmBrown) // Design system text color
-        .symbolRenderingMode(.hierarchical)
-        .symbolEffect(.bounce, value: contacts.list.isEmpty)
-    }
-    
-    private func handleImportedContact(_ cnContact: CNContact) {
-        let fullName = "\(cnContact.givenName) \(cnContact.familyName)".trimmingCharacters(in: .whitespaces)
-        let newContact = Contact(name: fullName.isEmpty ? "Unknown" : fullName)
-        contacts.addContact(newContact)
-        isShowingContactImport = false
-    }
-    
-    private func handleManualEntry(_ name: String) {
-        let newContact = Contact(name: name)
-        contacts.addContact(newContact)
-        isShowingManualEntry = false
     }
 }
 

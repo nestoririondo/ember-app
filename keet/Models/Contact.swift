@@ -12,7 +12,7 @@ import Foundation
 struct Contact: Identifiable, Equatable {
     let id: UUID  // No default value - will be set in initializers
     var name: String
-    var image: ImageResource?
+    var imageData: Data?
     var interactions: [Date] = []  // Array of all interaction dates (not optional!)
     
     /// Most recent interaction date
@@ -58,18 +58,18 @@ struct Contact: Identifiable, Equatable {
     // MARK: - Initializers
     
     /// Create a new contact with optional initial interaction
-    init(name: String, image: ImageResource? = nil, initialInteraction: Date = Date()) {
+    init(name: String, imageData: Data? = nil, initialInteraction: Date = Date()) {
         self.id = UUID()  // Generate new ID
         self.name = name
-        self.image = image
+        self.imageData = imageData
         self.interactions = [initialInteraction]  // Starts with one interaction
     }
     
     /// Create contact with existing interactions (for loading from storage)
-    init(id: UUID, name: String, image: ImageResource? = nil, interactions: [Date]) {
+    init(id: UUID, name: String, imageData: Data? = nil, interactions: [Date]) {
         self.id = id  // Use provided ID
         self.name = name
-        self.image = image
+        self.imageData = imageData
         self.interactions = interactions
     }
 }
@@ -79,7 +79,7 @@ extension Contact {
     static var example: Contact {
         Contact(
             name: "John Doe",
-            image: .test1,
+//            image: .test1,
             initialInteraction: Date().addingTimeInterval(-3600)  // 1 hour ago
         )
     }
@@ -88,23 +88,35 @@ extension Contact {
         [
             Contact(
                 name: "John Doe",
-                image: .test1,
+                imageData: UIImage.dataFromResource(.test1), // Converts Resource to Data
                 initialInteraction: Date().addingTimeInterval(-3600)  // 1 hour ago
             ),
             Contact(
                 name: "Jane Smith",
-                image: .test2,
+                imageData: UIImage.dataFromResource(.test2), // Converts Resource to Data
                 initialInteraction: Date().addingTimeInterval(-864000)  // 10 days ago
             ),
             Contact(
                 name: "Bob Johnson",
-                image: .test3,
-                initialInteraction: Date().addingTimeInterval(-1728000)  // 20 days ago
+                imageData: UIImage.dataFromResource(.test3), // Converts Resource to Data
+                initialInteraction: Date().addingTimeInterval(-6048000)  // 20 days ago
             ),
             Contact(
                 name: "Alice Williams",
                 initialInteraction: Date().addingTimeInterval(-6048000)  // 70 days ago
+            ),
+            Contact(
+                name: "Alice Williams2",
+                imageData: UIImage.dataFromResource(.test4), // Converts Resource to Data
+
+                initialInteraction: Date().addingTimeInterval(-554000)  // 70 days ago
             )
         ]
+    }
+}
+
+extension UIImage {
+    static func dataFromResource(_ resource: ImageResource) -> Data? {
+        return UIImage(resource: resource).jpegData(compressionQuality: 0.8)
     }
 }

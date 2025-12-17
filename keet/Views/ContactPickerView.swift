@@ -16,9 +16,16 @@ struct ContactPickerView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> CNContactPickerViewController {
         let picker = CNContactPickerViewController()
         picker.delegate = context.coordinator
+        
+        picker.displayedPropertyKeys = [
+            CNContactGivenNameKey,
+            CNContactFamilyNameKey,
+            CNContactImageDataKey
+        ]
+        
         return picker
     }
-    
+
     func updateUIViewController(_ uiViewController: CNContactPickerViewController, context: Context) {}
     
     func makeCoordinator() -> Coordinator {
