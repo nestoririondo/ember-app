@@ -104,11 +104,15 @@ struct ContentView: View {
     
     private func handleImportedContact(_ cnContact: CNContact) {
         let fullName = "\(cnContact.givenName) \(cnContact.familyName)".trimmingCharacters(in: .whitespaces)
-        _ = Contact(name: fullName.isEmpty ? "Unknown" : fullName)
+        let newContact = Contact(name: fullName.isEmpty ? "Unknown" : fullName)
+        contacts.addContact(newContact)
+        isShowingContactImport = false
     }
     
     private func handleManualEntry(_ name: String) {
-        _ = Contact(name: name)
+        let newContact = Contact(name: name)
+        contacts.addContact(newContact)
+        isShowingManualEntry = false
     }
 }
 
