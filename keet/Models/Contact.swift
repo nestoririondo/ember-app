@@ -9,7 +9,7 @@
 import SwiftUI
 import Foundation
 
-struct Contact: Identifiable, Equatable {
+struct Contact: Identifiable, Equatable, Codable {
     let id: UUID  // No default value - will be set in initializers
     var name: String
     var imageData: Data?
