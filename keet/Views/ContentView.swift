@@ -14,18 +14,6 @@ struct ContentView: View {
     @State private var isShowingContactImport: Bool = false
     @State private var isShowingManualEntry: Bool = false
     
-    private var emptyStateView: some View {
-        ContentUnavailableView(
-            "No Contacts",
-            systemImage: "person.crop.circle.badge.plus",
-            description: Text("Tap the + button to add your first contact")
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .foregroundStyle(.warmBrown)
-        .symbolRenderingMode(.hierarchical)
-        .symbolEffect(.bounce, value: contacts.list.isEmpty)
-    }
-    
     private func handleImportedContact(_ cnContact: CNContact) {
         let fullName = "\(cnContact.givenName) \(cnContact.familyName)"
             .trimmingCharacters(in: .whitespaces)
@@ -55,7 +43,7 @@ struct ContentView: View {
         NavigationStack {
             ScrollView {
                 if contacts.list.isEmpty {
-                    emptyStateView
+                    EmptyStateView()
                 } else {
                     LazyVGrid(columns: columns, spacing: .keetSpacingM) {
                         ForEach(contacts.list) { contact in
@@ -121,9 +109,9 @@ struct ContentView: View {
     }
 }
 
-//#Preview("Empty") {
-//    ContentView(contacts: ContactManager())
-//}
+#Preview("Empty") {
+    ContentView(contacts: ContactManager())
+}
 
 
 #Preview("With Contacts") {
