@@ -11,7 +11,6 @@ import ContactsUI
 
 struct ContentView: View {
     @State var contacts = ContactManager()
-    @State private var isShowingAddSheet = false
     @State private var isShowingContactImport: Bool = false
     @State private var isShowingManualEntry: Bool = false
     
@@ -77,14 +76,6 @@ struct ContentView: View {
                     
                 }
             }
-            .sheet(isPresented: $isShowingAddSheet) {
-                AddContactView { contact in
-                    withAnimation(.keetSpring) {
-                        contacts.addContact(contact)
-                    }
-                }
-            }
-            
             .sheet(isPresented: $isShowingContactImport) {
                 ContactPickerView { selectedContact in
                     handleImportedContact(selectedContact)
