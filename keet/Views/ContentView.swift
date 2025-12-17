@@ -6,10 +6,14 @@
 //
 
 import SwiftUI
+import Contacts
+import ContactsUI
 
 struct ContentView: View {
     @State var contacts = ContactManager()
     @State private var isShowingAddSheet = false
+    @State private var isShowingContactImport: Bool = false
+    @State private var isShowingManualEntry: Bool = false
     
     // Using design system spacing tokens
     let columns = [
@@ -56,12 +60,21 @@ struct ContentView: View {
             .background(Color.softCream) // Design system background color
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        isShowingAddSheet = true
+                    Menu {
+                        Button{
+                            isShowingContactImport = true
+                        } label: {
+                            Label("Import Contact", systemImage: "person.text.rectangle.fill")
+                        }
+                        Button{
+                            isShowingManualEntry = true
+                        } label: {
+                            Label("Add manually", systemImage: "rectangle.and.pencil.and.ellipsis")
+                        }
                     } label: {
                         Image(systemName: "plus")
-                            .foregroundStyle(.terracotta) // Design system accent color
                     }
+                    
                 }
             }
             .sheet(isPresented: $isShowingAddSheet) {
@@ -69,6 +82,17 @@ struct ContentView: View {
                     withAnimation(.keetSpring) {
                         contacts.addContact(contact)
                     }
+                }
+            }
+            
+            .sheet(isPresented: $isShowingContactImport) {
+                ContactPickerView { selectedContact in
+                    handleImportedContact(selectedContact)
+                }
+            }
+            .sheet(isPresented: $isShowingManualEntry) {
+                ManualEntryView { name in
+                    handleManualEntry(name)
                 }
             }
         }
@@ -85,6 +109,15 @@ struct ContentView: View {
         .foregroundStyle(.warmBrown) // Design system text color
         .symbolRenderingMode(.hierarchical)
         .symbolEffect(.bounce, value: contacts.list.isEmpty)
+    }
+    
+    private func handleImportedContact(_ cnContact: CNContact) {
+        let fullName = "\(cnContact.givenName) \(cnContact.familyName)".trimmingCharacters(in: .whitespaces)
+        _ = Contact(name: fullName.isEmpty ? "Unknown" : fullName)
+    }
+    
+    private func handleManualEntry(_ name: String) {
+        _ = Contact(name: name)
     }
 }
 
