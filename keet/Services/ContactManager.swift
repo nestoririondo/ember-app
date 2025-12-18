@@ -18,9 +18,9 @@ class ContactManager {
         save()
     }
     
-    func updateLastContacted(for contact: Contact) {
+    func updateLastContacted(for contact: Contact, date: Date = Date()) {
         if let index = list.firstIndex(where: { $0.id == contact.id }) {
-            list[index].interactions.append(Date())
+            list[index].interactions.append(date)
             save()
         }
     }
@@ -31,7 +31,7 @@ class ContactManager {
             save()
         }
     }
-    
+        
     func deleteContact(_ contact: Contact) {
         list.removeAll { $0.id == contact.id }
         save()

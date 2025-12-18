@@ -162,29 +162,12 @@ struct ManualEntryView: View {
             }
         }
         .sheet(isPresented: $isShowingCustomDatePicker) {
-                DatePicker(
-                    "Select Date",
-                    selection: $lastContacted,
-                    displayedComponents: .date
-                )
-                .datePickerStyle(.graphical)
-                .padding()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                .background(Color.softCream)
-                .navigationTitle("Pick a Date")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Done") {
-                            isShowingCustomDatePicker = false
-                        }
-                        .foregroundStyle(Color.terracotta)
-                        .fontWeight(.semibold)
-                    }
+            DatePickerView(
+                initialDate: lastContacted,
+                onDateSelected: { newDate in
+                    lastContacted = newDate
                 }
-                .onChange(of: lastContacted) {
-                    isShowingCustomDatePicker = false
-                }
+            )
             .presentationDetents([.medium])
         }
     }
