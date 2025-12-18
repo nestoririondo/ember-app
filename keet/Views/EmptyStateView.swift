@@ -8,16 +8,23 @@
 import SwiftUI
 
 struct EmptyStateView: View {
+    @State private var isBreathing = false
+    
     var body: some View {
         VStack(spacing: .keetSpacingXL) {
             Spacer()
             
             // App Icon
-            Image(systemName: "flame.fill")
-                .font(.system(size: 80))
-                .foregroundStyle(.terracotta)
-                .symbolEffect(.breathe)
-            
+            Image(.emberIconNoBg)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 120, height: 120)
+                .scaleEffect(isBreathing ? 1.1 : 1.0)
+                .opacity(isBreathing ? 1 : 0.75)
+                .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: isBreathing)
+                .onAppear {
+                    isBreathing = true
+                }
             // Title
             Text("Welcome to Ember")
                 .font(.largeTitle)
