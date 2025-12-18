@@ -80,6 +80,7 @@ struct ContentView: View {
                     addButton
                 }
             }
+            .ignoresSafeArea(edges: .bottom)
         }
         .tint(.terracotta)
         .sheet(isPresented: $isShowingManualEntry) {

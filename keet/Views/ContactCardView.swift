@@ -42,6 +42,13 @@ struct ContactCardView: View {
                     isPressed = false
                 }
         )
+        .onLongPressGesture(minimumDuration: 0.5, maximumDistance: 10) {
+            // Context menu will appear, reset the pressed state
+        } onPressingChanged: { pressing in
+            if !pressing {
+                isPressed = false
+            }
+        }
     }
     
     private func handleTap() {
