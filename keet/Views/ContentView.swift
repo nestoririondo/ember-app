@@ -105,22 +105,29 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Filter Bar
+            ZStack(alignment: .top) {
+                // Background + Scrollable Content
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // Spacer to push content below filter bar
+                        if !contacts.list.isEmpty {
+                            Color.clear.frame(height: 60)
+                        }
+                        
+                        contentView
+                    }
+                }
+                .padding(.bottom, .keetSpacingL)
+                .background(Color.softCream)
+                
+                // Floating Filter Bar on top
                 if !contacts.list.isEmpty {
                     filterBar
                         .padding(.horizontal)
                         .padding(.top, 8)
                         .padding(.bottom, 12)
-                        .background(Color.softCream)
                 }
-                
-                ScrollView {
-                    contentView
-                }
-                .padding(.bottom, .keetSpacingL)
             }
-            .background(Color.softCream)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading){
                     if !contacts.list.isEmpty {

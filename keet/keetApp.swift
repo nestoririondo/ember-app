@@ -13,7 +13,6 @@ struct keetApp: App {
         WindowGroup {
             ContentView()
                 .tint(.terracotta) // Global design system accent color
-                .preferredColorScheme(.light) // Force light mode (until dark mode is implemented)
         }
     }
 }
