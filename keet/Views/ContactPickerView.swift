@@ -11,7 +11,6 @@ import ContactsUI
 
 struct ContactPickerView: UIViewControllerRepresentable {
     let onSelect: (CNContact) -> Void
-    @Environment(\.dismiss) private var dismiss
     
     func makeUIViewController(context: Context) -> CNContactPickerViewController {
         let picker = CNContactPickerViewController()
@@ -29,24 +28,23 @@ struct ContactPickerView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: CNContactPickerViewController, context: Context) {}
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(onSelect: onSelect, dismiss: dismiss)
+        Coordinator(onSelect: onSelect)
     }
     
     class Coordinator: NSObject, CNContactPickerDelegate {
         let onSelect: (CNContact) -> Void
-        let dismiss: DismissAction
         
-        init(onSelect: @escaping (CNContact) -> Void, dismiss: DismissAction) {
+        init(onSelect: @escaping (CNContact) -> Void) {
             self.onSelect = onSelect
-            self.dismiss = dismiss
         }
         
         func contactPicker(_ picker: CNContactPickerViewController, didSelect contact: CNContact) {
             onSelect(contact)
+            // No need to call dismiss - CNContactPickerViewController dismisses itself
         }
         
         func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
-            dismiss()
+            // No need to call dismiss - CNContactPickerViewController dismisses itself
         }
     }
 }

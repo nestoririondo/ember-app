@@ -68,11 +68,12 @@ struct ContentView: View {
                     }
                 }
             }
-            .sheet(isPresented: $isShowingManualEntry) {
-                ManualEntryView(onSave: handleManualEntry)
-            }
+
         }
         .tint(.terracotta) // Sets the accent color for the entire NavigationStack
+        .sheet(isPresented: $isShowingManualEntry) {
+            ManualEntryView(onSave: handleManualEntry)
+        }
     }
 }
 

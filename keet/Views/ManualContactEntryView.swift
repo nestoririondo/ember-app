@@ -37,8 +37,6 @@ struct ManualEntryView: View {
             .trimmingCharacters(in: .whitespaces)
 
         selectedImage = UIImage(data: cnContact.thumbnailImageData ?? Data())
-        
-        isShowingContactImport = false
     }
     
     var body: some View {
@@ -164,18 +162,14 @@ struct ManualEntryView: View {
             }
         }
         .sheet(isPresented: $isShowingCustomDatePicker) {
-            NavigationStack {
-                VStack {
-                    DatePicker(
-                        "Select Date",
-                        selection: $lastContacted,
-                        displayedComponents: .date
-                    )
-                    .datePickerStyle(.graphical)
-                    .padding()
-                    
-                    Spacer()
-                }
+                DatePicker(
+                    "Select Date",
+                    selection: $lastContacted,
+                    displayedComponents: .date
+                )
+                .datePickerStyle(.graphical)
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .background(Color.softCream)
                 .navigationTitle("Pick a Date")
                 .navigationBarTitleDisplayMode(.inline)
@@ -188,7 +182,9 @@ struct ManualEntryView: View {
                         .fontWeight(.semibold)
                     }
                 }
-            }
+                .onChange(of: lastContacted) {
+                    isShowingCustomDatePicker = false
+                }
             .presentationDetents([.medium])
         }
     }
