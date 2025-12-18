@@ -11,27 +11,11 @@ import ContactsUI
 
 struct ContentView: View {
     @State var contacts = ContactManager()
-    @State private var isShowingContactImport: Bool = false
     @State private var isShowingManualEntry: Bool = false
     
-    private func handleImportedContact(_ cnContact: CNContact) {
-        let fullName = "\(cnContact.givenName) \(cnContact.familyName)"
-            .trimmingCharacters(in: .whitespaces)
-
-        let imageData = cnContact.thumbnailImageData
-
-        let newContact = Contact(
-            name: fullName.isEmpty ? "Unknown" : fullName,
-            imageData: imageData
-        )
+    private func handleManualEntry(name: String, imageData: Data, lastContacted: Date) {
+        let newContact = Contact(name: name, imageData: imageData, lastContacted: lastContacted)
         contacts.addContact(newContact)
-        isShowingContactImport = false
-    }
-    
-    private func handleManualEntry(_ name: String, image: Data? = nil) {
-        let newContact = Contact(name: name, imageData: image)
-        contacts.addContact(newContact)
-        isShowingManualEntry = false
     }
     
     let columns = [
@@ -77,32 +61,15 @@ struct ContentView: View {
             .background(Color.softCream)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button{
-                            isShowingContactImport = true
-                        } label: {
-                            Label("Import Contact", systemImage: "person.text.rectangle.fill")
-                        }
-                        Button{
-                            isShowingManualEntry = true
-                        } label: {
-                            Label("Add manually", systemImage: "rectangle.and.pencil.and.ellipsis")
-                        }
+                    Button{
+                        isShowingManualEntry = true
                     } label: {
                         Image(systemName: "plus")
                     }
-                    
-                }
-            }
-            .sheet(isPresented: $isShowingContactImport) {
-                ContactPickerView { selectedContact in
-                    handleImportedContact(selectedContact)
                 }
             }
             .sheet(isPresented: $isShowingManualEntry) {
-                ManualEntryView { name,image in
-                    handleManualEntry(name,image: image)
-                }
+                ManualEntryView(onSave: handleManualEntry)
             }
         }
         .tint(.terracotta) // Sets the accent color for the entire NavigationStack
