@@ -17,7 +17,7 @@ struct Contact: Identifiable, Equatable, Codable {
     
     /// Most recent interaction date
     var lastContacted: Date {
-        interactions.max() ?? Date()  // Returns most recent date or now if empty
+        interactions.last ?? Date()  // Returns most recent date or now if empty
     }
     
     /// Human-readable contextual time (e.g., "today", "3 days ago", "a month ago")

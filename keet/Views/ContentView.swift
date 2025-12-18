@@ -12,7 +12,6 @@ import ContactsUI
 struct ContentView: View {
     @State var contacts = ContactManager()
     @State private var isShowingManualEntry: Bool = false
-    @State private var isShowingCustomDatePicker: Bool = false
     @State private var selectedContact: Contact? = nil
     
     private func handleManualEntry(name: String, imageData: Data, lastContacted: Date) {
@@ -32,7 +31,6 @@ struct ContentView: View {
     
     private func showDatePicker(for contact: Contact) {
         selectedContact = contact
-        isShowingCustomDatePicker = true
     }
     
     var body: some View {
@@ -53,14 +51,12 @@ struct ContentView: View {
         .sheet(isPresented: $isShowingManualEntry) {
             ManualEntryView(onSave: handleManualEntry)
         }
-        .sheet(isPresented: $isShowingCustomDatePicker) {
-            if let contact = selectedContact {
-                DatePickerView(
-                    initialDate: contact.lastContacted,
-                    onDateSelected: handlePickDate
-                )
-                .presentationDetents([.medium])
-            }
+        .sheet(item: $selectedContact) { contact in
+            DatePickerView(
+                initialDate: contact.lastContacted,
+                onDateSelected: handlePickDate
+            )
+            .presentationDetents([.medium])
         }
     }
     
