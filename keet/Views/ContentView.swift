@@ -9,20 +9,46 @@ import SwiftUI
 import Contacts
 import ContactsUI
 
+enum ViewMode {
+       case bigGrid
+       case smallGrid
+   }
+
 struct ContentView: View {
     @State var contacts = ContactManager()
     @State private var isShowingManualEntry: Bool = false
     @State private var selectedContact: Contact? = nil
+    @State private var viewMode: ViewMode = .bigGrid
     
     private func handleManualEntry(name: String, imageData: Data, lastContacted: Date) {
         let newContact = Contact(name: name, imageData: imageData, lastContacted: lastContacted)
         contacts.addContact(newContact)
     }
     
-    let columns = [
-        GridItem(.flexible(), spacing: .keetSpacingL),
-        GridItem(.flexible(), spacing: .keetSpacingL)
-    ]
+    var columns: [GridItem] {
+        switch viewMode {
+        case .bigGrid:
+            [
+                GridItem(.flexible(), spacing: .keetSpacingL),
+                GridItem(.flexible(), spacing: .keetSpacingL)
+            ]
+        case .smallGrid:
+            [
+                GridItem(.flexible(), spacing: .keetSpacingM),
+                GridItem(.flexible(), spacing: .keetSpacingM),
+                GridItem(.flexible(), spacing: .keetSpacingM)
+            ]
+        }
+    }
+  
+    private func handleToggleViewMode() {
+        switch viewMode {
+        case .bigGrid:
+            viewMode = .smallGrid
+        case .smallGrid:
+            viewMode = .bigGrid
+        }
+    }
     
     private func handlePickDate(_ date: Date) {
         guard let contact = selectedContact else { return }
@@ -42,6 +68,13 @@ struct ContentView: View {
             .padding(.bottom, .keetSpacingL)
             .background(Color.softCream)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading){
+                    Button {
+                        handleToggleViewMode()
+                    } label: {
+                        Image(systemName: viewMode == .bigGrid ? "rectangle.grid.3x2" : "square.grid.2x2")
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     addButton
                 }
