@@ -185,7 +185,7 @@ struct ManualEntryView: View {
             .font(.keetBody)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(Color.white)
+            .background(Color.cardBackground)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
@@ -221,7 +221,7 @@ struct ManualEntryView: View {
             .foregroundStyle(Color.warmBrown)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(Color.white)
+            .background(Color.cardBackground)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
@@ -260,7 +260,7 @@ struct ManualEntryView: View {
         .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.white)
+                .fill(Color.cardBackground)
                 .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
         )
         .transition(.scale.combined(with: .opacity))

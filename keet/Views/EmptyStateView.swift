@@ -9,13 +9,14 @@ import SwiftUI
 
 struct EmptyStateView: View {
     @State private var isBreathing = false
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(spacing: .keetSpacingXL) {
             Spacer()
             
             // App Icon
-            Image(.emberIconNoBg)
+            Image(colorScheme == .light ? .emberIconNoBg : .emberIconDarkNobg)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 120, height: 120)
@@ -46,17 +47,16 @@ struct EmptyStateView: View {
                 
                 TutorialRow(
                     icon: "calendar.badge.clock",
-                    text: "Mark when you've reached out to them"
+                    text: "Tap when you've reached out to them"
                 )
                 
                 TutorialRow(
                     icon: "flame",
                     text: "Contacts you haven't talked to in a while will start to fade",
-                    opacity: 0.6
                 )
             }
             .padding()
-            .background(Color.white.opacity(0.8))
+            .background(Color.cardBackground.opacity(0.8))
             .cornerRadius(16)
             .padding(.horizontal, .keetSpacingXL)
             
@@ -85,8 +85,6 @@ private struct TutorialRow: View {
                 .font(.title2)
                 .foregroundStyle(.terracotta)
                 .frame(width: 32)
-                .opacity(opacity)
-            
             Text(text)
                 .font(.body)
                 .foregroundStyle(.warmBrown)
@@ -97,4 +95,5 @@ private struct TutorialRow: View {
 
 #Preview {
     EmptyStateView()
+    
 }

@@ -9,7 +9,18 @@ import SwiftUI
 
 // MARK: - Color Palette
 extension Color {
-    // Warm earth tones
+    // MARK: - Adaptive Background Colors
+    static let softCream = Color(
+        light: Color(red: 0.98, green: 0.97, blue: 0.93), // #FAF8ED - Light cream
+        dark: Color(red: 0.11, green: 0.11, blue: 0.12)   // #1C1C1E - Dark background
+    )
+    
+    static let cardBackground = Color(
+        light: .white,
+        dark: Color(red: 0.17, green: 0.17, blue: 0.18)   // #2C2C2E - Elevated dark
+    )
+    
+    // MARK: - Primary Brand Colors (Stay consistent in both modes)
     static let terracotta = Color(red: 0.89, green: 0.49, blue: 0.38) // #E37D61
     static let terracottaLight = Color(red: 0.95, green: 0.70, blue: 0.62) // Lighter variant
     static let terracottaDark = Color(red: 0.75, green: 0.35, blue: 0.25) // Darker variant
@@ -18,11 +29,18 @@ extension Color {
     static let sageGreenLight = Color(red: 0.75, green: 0.82, blue: 0.77)
     static let sageGreenDark = Color(red: 0.45, green: 0.57, blue: 0.49)
     
-    static let softCream = Color(red: 0.98, green: 0.97, blue: 0.93) // #FAF8ED
-    static let warmBrown = Color(red: 0.53, green: 0.42, blue: 0.35) // #876B59
-    static let warmBrownLight = Color(red: 0.70, green: 0.60, blue: 0.52)
+    // MARK: - Adaptive Text Colors
+    static let warmBrown = Color(
+        light: Color(red: 0.53, green: 0.42, blue: 0.35), // #876B59 - Warm brown
+        dark: Color(red: 0.85, green: 0.82, blue: 0.78)   // Light warm for dark mode
+    )
     
-    // Aging colors (for visual aging effect)
+    static let warmBrownLight = Color(
+        light: Color(red: 0.70, green: 0.60, blue: 0.52),
+        dark: Color(red: 0.70, green: 0.65, blue: 0.60)
+    )
+    
+    // MARK: - Aging Colors (for visual aging effect)
     // Very warm, saturated colors for recent contacts
     static let recentWarm = Color(red: 0.95, green: 0.45, blue: 0.30) // Vibrant warm red-orange
     static let recentVibrant = Color(red: 0.92, green: 0.50, blue: 0.35) // Warm terracotta
@@ -34,11 +52,36 @@ extension Color {
     // Cold, desaturated colors for old contacts
     static let oldCool = Color(red: 0.65, green: 0.68, blue: 0.70) // Cool blue-gray (desaturated)
     static let oldFaded = Color(red: 0.75, green: 0.75, blue: 0.75) // Very desaturated gray
+    
+    // MARK: - Helper Initializer for Light/Dark Colors
+    init(light: Color, dark: Color) {
+        self.init(uiColor: UIColor(light: UIColor(light), dark: UIColor(dark)))
+    }
+}
+
+// MARK: - UIColor Extension for Light/Dark Mode
+extension UIColor {
+    convenience init(light: UIColor, dark: UIColor) {
+        self.init { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                return dark
+            case .light, .unspecified:
+                return light
+            @unknown default:
+                return light
+            }
+        }
+    }
 }
 
 // MARK: - ShapeStyle Extensions
 // This makes colors available for .foregroundStyle() modifier
 extension ShapeStyle where Self == Color {
+    // Backgrounds
+    static var softCream: Color { .softCream }
+    static var cardBackground: Color { .cardBackground }
+    
     // Warm earth tones
     static var terracotta: Color { .terracotta }
     static var terracottaLight: Color { .terracottaLight }
@@ -48,7 +91,6 @@ extension ShapeStyle where Self == Color {
     static var sageGreenLight: Color { .sageGreenLight }
     static var sageGreenDark: Color { .sageGreenDark }
     
-    static var softCream: Color { .softCream }
     static var warmBrown: Color { .warmBrown }
     static var warmBrownLight: Color { .warmBrownLight }
     
@@ -216,7 +258,7 @@ extension Animation {
 struct KeetCardStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .background(Color.softCream)
+            .background(Color.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: .keetCornerMedium))
             .keetShadow(intensity: .medium)
     }
