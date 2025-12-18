@@ -269,6 +269,7 @@
 				DEVELOPMENT_TEAM = PG7J2YC6L3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Ember;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSContactsUsageDescription = "\"We need acces to add them\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -303,6 +304,7 @@
 				DEVELOPMENT_TEAM = PG7J2YC6L3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Ember;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSContactsUsageDescription = "\"We need acces to add them\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

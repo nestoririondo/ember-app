@@ -69,10 +69,12 @@ struct ContentView: View {
             .background(Color.softCream)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading){
-                    Button {
-                        handleToggleViewMode()
-                    } label: {
-                        Image(systemName: viewMode == .bigGrid ? "rectangle.grid.3x2" : "square.grid.2x2")
+                    if !contacts.list.isEmpty {
+                        Button {
+                            handleToggleViewMode()
+                        } label: {
+                            Image(systemName: viewMode == .bigGrid ? "rectangle.grid.3x2" : "square.grid.2x2")
+                        }
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
