@@ -146,17 +146,19 @@ extension Contact {
         
         switch daysSince {
         case 0...1:
-            return 1.0      // Full saturation - vibrant!
+            return 1.0
         case 2...3:
-            return 0.90     // Slightly less saturated
+            return 0.90
         case 4...7:
-            return 0.75     // Noticeably desaturating
+            return 0.80
         case 8...14:
-            return 0.60     // More gray
-        case 15...:
-            return 0.25     // Very desaturated
+            return 0.65
+        case 15...30:
+            return 0.50
+        case 30...60:
+            return 0.35
         default:
-            return 0.15     // Almost grayscale
+            return 0.15
         }
     }
     
@@ -165,17 +167,19 @@ extension Contact {
         
         switch daysSince {
         case 0...1:
-            return 1.0      // Full saturation - vibrant!
+            return 1.0
         case 2...3:
-            return 0.90     // Slightly less saturated
+            return 0.90
         case 4...7:
-            return 0.75     // Noticeably desaturating
+            return 0.80
         case 8...14:
-            return 0.60     // More gray
-        case 15...:
-            return 0.30     // Very desaturated
+            return 0.65
+        case 15...30:
+            return 0.50
+        case 30...60:
+            return 0.35
         default:
-            return 1
+            return 0.15
         }
     }
     

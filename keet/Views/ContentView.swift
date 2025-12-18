@@ -12,13 +12,37 @@ import ContactsUI
 enum ViewMode {
        case bigGrid
        case smallGrid
-   }
+}
+
+enum ContactFilter: String, CaseIterable {
+    case all = "All"
+    case burning = "🔥 Burning"
+    case warm = "☀️ Warm"
+    case cooling = "🌙 Cooling"
+    case needsLove = "💙 Needs Love"
+    
+    func matches(contact: Contact) -> Bool {
+        switch self {
+        case .all:
+            return true
+        case .burning:
+            return contact.daysSinceLastContact <= 7
+        case .warm:
+            return contact.daysSinceLastContact > 7 && contact.daysSinceLastContact <= 21
+        case .cooling:
+            return contact.daysSinceLastContact > 21 && contact.daysSinceLastContact <= 45
+        case .needsLove:
+            return contact.daysSinceLastContact > 45
+        }
+    }
+}
 
 struct ContentView: View {
     @State var contacts = ContactManager()
     @State private var contactToEdit: Contact? = nil
     @State private var contactForDatePicker: Contact? = nil
     @State private var viewMode: ViewMode = .bigGrid
+    @State private var activeFilter: ContactFilter = .all
     
     private func handleSaveContact(contact: Contact?, name: String, imageData: Data, lastContacted: Date) {
         // Check if this was a temporary "create" contact (empty name) or a real edit
@@ -75,18 +99,35 @@ struct ContentView: View {
         contactToEdit = Contact(name: "", imageData: nil, lastContacted: Date())
     }
     
+    private var filteredContacts: [Contact] {
+        contacts.list.filter { activeFilter.matches(contact: $0) }
+    }
+    
     var body: some View {
         NavigationStack {
-            ScrollView {
-                contentView
+            VStack(spacing: 0) {
+                // Filter Bar
+                if !contacts.list.isEmpty {
+                    filterBar
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                        .padding(.bottom, 12)
+                        .background(Color.softCream)
+                }
+                
+                ScrollView {
+                    contentView
+                }
+                .padding(.bottom, .keetSpacingL)
             }
-            .padding(.bottom, .keetSpacingL)
             .background(Color.softCream)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading){
                     if !contacts.list.isEmpty {
                         Button {
-                            handleToggleViewMode()
+                            withAnimation(.spring(response: 0.3)) {
+                                handleToggleViewMode()
+                            }
                         } label: {
                             Image(systemName: viewMode == .bigGrid ? "rectangle.grid.3x2" : "square.grid.2x2")
                         }
@@ -124,7 +165,7 @@ struct ContentView: View {
     
     private var contactsGrid: some View {
         LazyVGrid(columns: columns, spacing: .keetSpacingM) {
-            ForEach(contacts.list) { contact in
+            ForEach(filteredContacts) { contact in
                 contactCard(for: contact)
             }
         }
@@ -153,9 +194,11 @@ struct ContentView: View {
             } label: {
                 Label("Contacted yesterday", systemImage: "calendar.badge.clock")
             }
-            
+            Divider()
             Button(role: .destructive) {
-                contacts.deleteContact(contact)
+                withAnimation(.spring(response: 0.3)) {
+                    contacts.deleteContact(contact)
+                }
             } label: {
                 Label("Delete", systemImage: "trash")
             }
@@ -167,6 +210,25 @@ struct ContentView: View {
             showCreateContact()
         } label: {
             Image(systemName: "plus")
+        }
+    }
+    
+    private var filterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(ContactFilter.allCases, id: \.self) { filter in
+                    FilterChip(
+                        title: filter.rawValue,
+                        count: contacts.list.filter { filter.matches(contact: $0) }.count,
+                        isSelected: activeFilter == filter
+                    ) {
+                        withAnimation(.spring(response: 0.3)) {
+                            activeFilter = filter
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 4)
         }
     }
 }
@@ -182,3 +244,49 @@ struct ContentView: View {
     return ContentView(contacts: viewModel)
 }
 
+// MARK: - Filter Chip Component
+struct FilterChip: View {
+    let title: String
+    let count: Int
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Text(title)
+                    .font(.keetCaption)
+                    .fontWeight(isSelected ? .semibold : .regular)
+                
+                if count > 0 {
+                    Text("\(count)")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(isSelected ? Color.terracotta : Color.warmBrown.opacity(0.6))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            Capsule()
+                                .fill(isSelected ? Color.white.opacity(0.3) : Color.warmBrown.opacity(0.1))
+                        )
+                }
+            }
+            .foregroundStyle(isSelected ? Color.white : Color.warmBrown)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(
+                Capsule()
+                    .fill(isSelected ? Color.terracotta : Color.white)
+            )
+            .overlay(
+                Capsule()
+                    .strokeBorder(
+                        isSelected ? Color.clear : Color.warmBrown.opacity(0.2),
+                        lineWidth: 1
+                    )
+            )
+            .keetShadow(intensity: isSelected ? .medium : .light)
+        }
+        .buttonStyle(.plain)
+    }
+}
