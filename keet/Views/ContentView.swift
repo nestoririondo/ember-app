@@ -64,7 +64,6 @@ struct ContentView: View {
             ScrollView {
                 contentView
             }
-            .padding(.trailing, .keetSpacingL)
             .padding(.bottom, .keetSpacingL)
             .background(Color.softCream)
             .toolbar {
@@ -148,9 +147,9 @@ struct ContentView: View {
     }
 }
 
-//#Preview("Empty") {
-//    ContentView(contacts: ContactManager())
-//}
+#Preview("Empty") {
+    ContentView(contacts: ContactManager())
+}
 
 
 #Preview("With Contacts") {
