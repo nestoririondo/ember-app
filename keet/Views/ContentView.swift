@@ -109,9 +109,9 @@ struct ContentView: View {
     }
 }
 
-#Preview("Empty") {
-    ContentView(contacts: ContactManager())
-}
+//#Preview("Empty") {
+//    ContentView(contacts: ContactManager())
+//}
 
 
 #Preview("With Contacts") {

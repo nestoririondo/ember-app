@@ -29,7 +29,6 @@ struct EmptyStateView: View {
                 .font(.headline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal)
             
             // Tutorial Steps
             VStack(alignment: .leading, spacing: .keetSpacingL) {
@@ -45,7 +44,8 @@ struct EmptyStateView: View {
                 
                 TutorialRow(
                     icon: "flame",
-                    text: "Contacts you haven't talked to in a while will start to fade"
+                    text: "Contacts you haven't talked to in a while will start to fade",
+                    opacity: 0.6
                 )
             }
             .padding()
@@ -70,6 +70,7 @@ struct EmptyStateView: View {
 private struct TutorialRow: View {
     let icon: String
     let text: String
+    var opacity: Double = 1.0
     
     var body: some View {
         HStack(alignment: .top, spacing: .keetSpacingL) {
@@ -77,6 +78,7 @@ private struct TutorialRow: View {
                 .font(.title2)
                 .foregroundStyle(.terracotta)
                 .frame(width: 32)
+                .opacity(opacity)
             
             Text(text)
                 .font(.body)

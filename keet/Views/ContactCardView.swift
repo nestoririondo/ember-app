@@ -11,8 +11,14 @@ struct ContactCardView: View {
     let contact: Contact
     let onTap: () -> Void
     
+    @State private var isPressed: Bool = false
+    
     var body: some View {
-        Button(action: onTap) {
+        Button(action: {
+            onTap()
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        }
+        ) {
             GeometryReader { geometry in
                 ZStack {
                     // Background image or placeholder
@@ -82,6 +88,30 @@ struct ContactCardView: View {
             .keetShadow(intensity: .medium)
         }
         .buttonStyle(.plain)
+        .scaleEffect(isPressed ? 0.94 : 1)
+        .rotation3DEffect(
+            .degrees(isPressed ? 4 : 0),
+            axis: (x: 1, y: 0, z: 0)
+        )
+        .animation(
+            .spring(
+                response: 0.15,
+                dampingFraction: 0.25,
+                blendDuration: 2
+            ),
+            value: isPressed
+        )
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    if !isPressed {
+                        isPressed = true
+                    }
+                }
+                .onEnded { _ in
+                    isPressed = false
+                }
+        )
     }
 }
 
