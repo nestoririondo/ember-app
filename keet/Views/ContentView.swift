@@ -9,7 +9,7 @@ import SwiftUI
 import Contacts
 import ContactsUI
 
-enum ViewMode {
+enum ViewMode: String {
        case bigGrid
        case smallGrid
 }
@@ -41,20 +41,8 @@ struct ContentView: View {
     @State var contacts = ContactManager()
     @State private var contactToEdit: Contact? = nil
     @State private var contactForDatePicker: Contact? = nil
-    @State private var viewMode: ViewMode = .bigGrid
-    @State private var activeFilter: ContactFilter = .all
-    
-    private func handleSaveContact(contact: Contact?, name: String, imageData: Data, lastContacted: Date) {
-        // Check if this was a temporary "create" contact (empty name) or a real edit
-        if let existingContact = contact, !existingContact.name.isEmpty {
-            // Real contact with data → EDIT
-            contacts.updateContact(existingContact, name: name, imageData: imageData, lastContacted: lastContacted)
-        } else {
-            // Empty contact or nil → CREATE NEW
-            let newContact = Contact(name: name, imageData: imageData, lastContacted: lastContacted)
-            contacts.addContact(newContact)
-        }
-    }
+    @AppStorage("viewMode") private var viewMode: ViewMode = .bigGrid
+    @AppStorage("activeFilter") private var activeFilter: ContactFilter = .all
     
     var columns: [GridItem] {
         switch viewMode {
@@ -71,7 +59,7 @@ struct ContentView: View {
             ]
         }
     }
-  
+    
     private func handleToggleViewMode() {
         switch viewMode {
         case .bigGrid:
@@ -81,6 +69,18 @@ struct ContentView: View {
         }
     }
     
+    private func handleSaveContact(contact: Contact?, name: String, imageData: Data, lastContacted: Date) {
+        // Check if this was a temporary "create" contact (empty name) or a real edit
+        if let existingContact = contact, !existingContact.name.isEmpty {
+            // Real contact with data → EDIT
+            contacts.updateContact(existingContact, name: name, imageData: imageData, lastContacted: lastContacted)
+        } else {
+            // Empty contact or nil → CREATE NEW
+            let newContact = Contact(name: name, imageData: imageData, lastContacted: lastContacted)
+            contacts.addContact(newContact)
+        }
+    }
+
     private func handlePickDate(_ date: Date) {
         guard let contact = contactForDatePicker else { return }
         contacts.updateLastContacted(for: contact, date: date)
@@ -106,15 +106,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Filter Bar
-                if !contacts.list.isEmpty {
-                    filterBar
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                        .padding(.bottom, 12)
-                        .background(Color.softCream)
-                }
-                
                 ScrollView {
                     contentView
                 }
@@ -125,9 +116,7 @@ struct ContentView: View {
                 ToolbarItem(placement: .navigationBarLeading){
                     if !contacts.list.isEmpty {
                         Button {
-                            withAnimation(.spring(response: 0.3)) {
-                                handleToggleViewMode()
-                            }
+                            handleToggleViewMode()
                         } label: {
                             Image(systemName: viewMode == .bigGrid ? "rectangle.grid.3x2" : "square.grid.2x2")
                         }
@@ -159,6 +148,10 @@ struct ContentView: View {
         if contacts.list.isEmpty {
             EmptyStateView()
         } else {
+            filterBar
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .background(Color.softCream)
             contactsGrid
         }
     }
@@ -169,6 +162,7 @@ struct ContentView: View {
                 contactCard(for: contact)
             }
         }
+        .animation(.spring(response: 0.3), value: viewMode)
         .padding(.keetSpacingL)
         .padding(.bottom, 80)
     }
@@ -196,9 +190,7 @@ struct ContentView: View {
             }
             Divider()
             Button(role: .destructive) {
-                withAnimation(.spring(response: 0.3)) {
-                    contacts.deleteContact(contact)
-                }
+                contacts.deleteContact(contact)
             } label: {
                 Label("Delete", systemImage: "trash")
             }

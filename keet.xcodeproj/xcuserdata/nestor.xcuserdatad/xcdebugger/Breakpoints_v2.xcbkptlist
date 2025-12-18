@@ -23,52 +23,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "6FCF5B3E-784C-4423-8C07-1E2833DB7529"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "keet/Views/ContentView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
-            landmarkName = "handleSaveContact(contact:name:imageData:lastContacted:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "6FCF5B3E-784C-4423-8C07-1E2833DB7529 - 5c61401833d07a2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "keet.ContentView.handleSaveContact(contact: Swift.Optional&lt;keet.Contact&gt;, name: Swift.String, imageData: Foundation.Data, lastContacted: Foundation.Date) -&gt; ()"
-                  moduleName = "keet.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nestor/Documents/dev/SWIFT/keet/keet/Views/ContentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "49"
-                  endingLineNumber = "49">
-               </Location>
-               <Location
-                  uuid = "6FCF5B3E-784C-4423-8C07-1E2833DB7529 - 5c61401833d07a2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "keet.ContentView.handleSaveContact(contact: Swift.Optional&lt;keet.Contact&gt;, name: Swift.String, imageData: Foundation.Data, lastContacted: Foundation.Date) -&gt; ()"
-                  moduleName = "keet.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nestor/Documents/dev/SWIFT/keet/keet/Views/ContentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "49"
-                  endingLineNumber = "49">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "46053DB5-44CC-4215-A92C-3812D12D9269"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
