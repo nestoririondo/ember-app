@@ -16,13 +16,20 @@ enum ViewMode {
 
 struct ContentView: View {
     @State var contacts = ContactManager()
-    @State private var isShowingManualEntry: Bool = false
-    @State private var selectedContact: Contact? = nil
+    @State private var contactToEdit: Contact? = nil
+    @State private var contactForDatePicker: Contact? = nil
     @State private var viewMode: ViewMode = .bigGrid
     
-    private func handleManualEntry(name: String, imageData: Data, lastContacted: Date) {
-        let newContact = Contact(name: name, imageData: imageData, lastContacted: lastContacted)
-        contacts.addContact(newContact)
+    private func handleSaveContact(contact: Contact?, name: String, imageData: Data, lastContacted: Date) {
+        // Check if this was a temporary "create" contact (empty name) or a real edit
+        if let existingContact = contact, !existingContact.name.isEmpty {
+            // Real contact with data → EDIT
+            contacts.updateContact(existingContact, name: name, imageData: imageData, lastContacted: lastContacted)
+        } else {
+            // Empty contact or nil → CREATE NEW
+            let newContact = Contact(name: name, imageData: imageData, lastContacted: lastContacted)
+            contacts.addContact(newContact)
+        }
     }
     
     var columns: [GridItem] {
@@ -51,12 +58,21 @@ struct ContentView: View {
     }
     
     private func handlePickDate(_ date: Date) {
-        guard let contact = selectedContact else { return }
+        guard let contact = contactForDatePicker else { return }
         contacts.updateLastContacted(for: contact, date: date)
     }
     
     private func showDatePicker(for contact: Contact) {
-        selectedContact = contact
+        contactForDatePicker = contact
+    }
+    
+    private func showEditContact(for contact: Contact) {
+        contactToEdit = contact
+    }
+    
+    private func showCreateContact() {
+        // Create a temporary "empty" contact for the sheet
+        contactToEdit = Contact(name: "", imageData: nil, lastContacted: Date())
     }
     
     var body: some View {
@@ -83,10 +99,12 @@ struct ContentView: View {
             .ignoresSafeArea(edges: .bottom)
         }
         .tint(.terracotta)
-        .sheet(isPresented: $isShowingManualEntry) {
-            ManualEntryView(onSave: handleManualEntry)
+        .sheet(item: $contactToEdit) { contact in
+            ManualEntryView(contact: contact) { name, imageData, lastContacted in
+                handleSaveContact(contact: contact, name: name, imageData: imageData, lastContacted: lastContacted)
+            }
         }
-        .sheet(item: $selectedContact) { contact in
+        .sheet(item: $contactForDatePicker) { contact in
             DatePickerView(
                 initialDate: contact.lastContacted,
                 onDateSelected: handlePickDate
@@ -119,6 +137,11 @@ struct ContentView: View {
             contacts.updateLastContacted(for: contact)
         }
         .contextMenu {
+            Button(role: .confirm){
+                showEditContact(for: contact)
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
             Button(role: .confirm) {
                 showDatePicker(for: contact)
             } label: {
@@ -141,7 +164,7 @@ struct ContentView: View {
     
     private var addButton: some View {
         Button {
-            isShowingManualEntry = true
+            showCreateContact()
         } label: {
             Image(systemName: "plus")
         }

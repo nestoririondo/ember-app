@@ -12,15 +12,41 @@ import ContactsUI
 struct ManualEntryView: View {
     @Environment(\.dismiss) private var dismiss
     
-    @State var name = ""
-    @State var selectedImage: UIImage? = nil
-    @State var lastContacted: Date = Date()
+    @State var name: String
+    @State var selectedImage: UIImage?
+    @State var lastContacted: Date
     @State private var avatarItem: PhotosPickerItem? = nil
     @State private var isShowingContactImport: Bool = false
     @State private var isShowingCustomDatePicker: Bool = false
     @State private var showValidationTooltip: Bool = false
     
+    let contact: Contact?
     let onSave: (String, Data, Date) -> Void
+    
+    init(contact: Contact?, onSave: @escaping (String, Data, Date) -> Void) {
+        self.contact = contact
+        self.onSave = onSave
+        
+        // Initialize state from contact (which might be empty for create mode)
+        _name = State(initialValue: contact?.name ?? "")
+        _lastContacted = State(initialValue: contact?.lastContacted ?? Date())
+        
+        // Convert image data to UIImage if available
+        if let contact = contact,
+           let imageData = contact.imageData,
+           !imageData.isEmpty,
+           let uiImage = UIImage(data: imageData) {
+            _selectedImage = State(initialValue: uiImage)
+        } else {
+            _selectedImage = State(initialValue: nil)
+        }
+    }
+    
+    private var isCreating: Bool {
+        // We're creating if the contact was passed with an empty name
+        contact?.name.isEmpty ?? false
+    }
+    
     
     private var isNameValid: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
@@ -105,7 +131,7 @@ struct ManualEntryView: View {
             Spacer()
         }
         .background(Color.softCream)
-        .navigationTitle("New Contact")
+        .navigationTitle(isCreating ? "New Contact" : "Edit Contact")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -113,7 +139,7 @@ struct ManualEntryView: View {
                     .foregroundStyle(Color.warmBrown)
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button("Add") {
+                Button(isCreating ? "Add" : "Save") {
                     handleAdd()
                 }
                 .foregroundStyle(isNameValid ? Color.terracotta : Color.gray.opacity(0.5))
@@ -241,8 +267,8 @@ struct ManualEntryView: View {
     }
 }
 
-#Preview {
-    ManualEntryView { name, imageData, _ in
-        print("Saved contact:", name, imageData.count, "bytes")
-    }
-}
+//#Preview {
+//    ManualEntryView { name, imageData, _ in
+//        print("Saved contact:", name, imageData.count, "bytes")
+//    }
+//}
