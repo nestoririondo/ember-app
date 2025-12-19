@@ -124,6 +124,8 @@ struct ManualEntryView: View {
                 
                 pickDateButton
                 
+                Spacer()
+                
                 importContactButton
             }
             .padding(.horizontal, 24)
