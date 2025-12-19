@@ -185,8 +185,21 @@ struct ManualEntryView: View {
             .font(.keetBody)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
+            .padding(.trailing, name.isEmpty ? 16 : 40) // Extra padding for clear button
             .background(Color.cardBackground)
             .cornerRadius(12)
+            .overlay(alignment: .trailing) {
+                if !name.isEmpty {
+                    Button {
+                        name = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 16))
+                            .foregroundStyle(Color.warmBrown.opacity(0.5))
+                    }
+                    .padding(.trailing, 12)
+                }
+            }
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(
@@ -201,6 +214,7 @@ struct ManualEntryView: View {
                 }
             }
     }
+
     
     private var pickDateButton: some View {
         Button {
@@ -267,8 +281,3 @@ struct ManualEntryView: View {
     }
 }
 
-//#Preview {
-//    ManualEntryView { name, imageData, _ in
-//        print("Saved contact:", name, imageData.count, "bytes")
-//    }
-//}
