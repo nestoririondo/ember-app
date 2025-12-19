@@ -111,7 +111,7 @@ struct ContentView: View {
                     VStack(spacing: 0) {
                         // Spacer to push content below filter bar
                         if !contacts.list.isEmpty {
-                            Color.clear.frame(height: 60)
+                            Color.clear.frame(height: 50)
                         }
                         
                         contentView
@@ -188,12 +188,12 @@ struct ContentView: View {
             Button(role: .confirm){
                 showEditContact(for: contact)
             } label: {
-                Label("Edit", systemImage: "pencil")
+                Label("Edit", systemImage: "square.and.pencil")
             }
             Button(role: .confirm) {
                 showDatePicker(for: contact)
             } label: {
-                Label("Contacted on...", systemImage: "calendar")
+                Label("Set last contact date", systemImage: "calendar")
             }
             
             Button(role: .confirm) {
@@ -238,24 +238,6 @@ struct ContentView: View {
             .padding(.horizontal, 4)
         }
     }
-}
-
-#Preview("Empty") {
-    ContentView(contacts: ContactManager())
-}
-
-
-#Preview("With Contacts") {
-    let viewModel = ContactManager()
-    viewModel.list = Contact.examples
-    return ContentView(contacts: viewModel)
-}
-
-#Preview("Dark Mode") {
-    let viewModel = ContactManager()
-    viewModel.list = Contact.examples
-    return ContentView(contacts: viewModel)
-        .preferredColorScheme(.dark)
 }
 
 // MARK: - Filter Chip Component
@@ -304,3 +286,22 @@ struct FilterChip: View {
         .buttonStyle(.plain)
     }
 }
+
+//#Preview("Empty") {
+//    ContentView(contacts: ContactManager())
+//}
+//
+
+#Preview("With Contacts") {
+    let viewModel = ContactManager()
+    viewModel.list = Contact.examples
+    return ContentView(contacts: viewModel)
+    
+}
+
+//#Preview("Dark Mode") {
+//    let viewModel = ContactManager()
+//    viewModel.list = Contact.examples
+//    return ContentView(contacts: viewModel)
+//        .preferredColorScheme(.dark)
+//}

@@ -190,17 +190,17 @@ extension Contact {
         case 0...1:
             return 1.0
         case 2...3:
-            return 0.90
+            return 0.95
         case 4...7:
-            return 0.80
+            return 0.9
         case 8...14:
-            return 0.65
+            return 0.85
         case 15...30:
-            return 0.50
+            return 0.80
         case 30...60:
-            return 0.35
+            return 0.75
         default:
-            return 0.15
+            return 0.65
         }
     }
     
@@ -222,6 +222,27 @@ extension Contact {
             return 0.35
         default:
             return 0.15
+        }
+    }
+    
+    var coolOverlayOpacity: Double {
+        let daysSince = Calendar.current.dateComponents([.day], from: lastContacted, to: Date()).day ?? 0
+        
+        switch daysSince {
+        case 0...1:
+            return 0
+        case 2...3:
+            return 0.1
+        case 4...7:
+            return 0.2
+        case 8...14:
+            return 0.3
+        case 15...30:
+            return 0.4
+        case 30...60:
+            return 0.5
+        default:
+            return 0.6
         }
     }
     

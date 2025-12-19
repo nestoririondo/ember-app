@@ -65,6 +65,13 @@ struct ContactCardView: View {
                     gradientOverlay
                 }
                 
+                // Show warm overlay for contacts contacted today
+                if contact.daysSinceLastContact == 0 {
+                    warmOverlay
+                } else {
+                    coolOverlay
+                }
+                
                 textOverlay
             }
         }
@@ -102,10 +109,38 @@ struct ContactCardView: View {
         }
     }
     
+    private var coolOverlay: some View {
+        RadialGradient(
+            colors: [
+                Color.clear,
+                Color(red: 0.6, green: 0.85, blue: 1.0).opacity(contact.coolOverlayOpacity * 0.45),
+                Color(red: 0.5, green: 0.75, blue: 0.95).opacity(contact.coolOverlayOpacity * 1.5),
+            ],
+            center: .center,
+            startRadius: 10,
+            endRadius: 180
+        )
+        .blendMode(.screen)
+    }
+    
+    private var warmOverlay: some View {
+        RadialGradient(
+            colors: [
+                Color.clear,
+                Color(red: 1.0, green: 0.75, blue: 0.4).opacity(0.25),
+                Color(red: 1.0, green: 0.6, blue: 0.3).opacity(0.6)
+            ],
+            center: .center,
+            startRadius: 10,
+            endRadius: 400
+        )
+        .blendMode(.screen)
+    }
+    
     private var gradientOverlay: some View {
         LinearGradient(
             colors: [
-                .black.opacity(0.7),
+                .black.opacity(0.8),
                 .black.opacity(0.4),
                 .clear
             ],
@@ -136,3 +171,8 @@ struct ContactCardView: View {
     }
 }
 
+#Preview {
+    ContactCardView(contact: Contact(name: "Test")){
+        print("f;adls")
+    }
+}
