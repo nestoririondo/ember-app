@@ -12,6 +12,7 @@ struct ContactCardView: View {
     let onTap: () -> Void
     
     @State private var isPressed: Bool = false
+    @State private var isPulsing: Bool = false
     
     var body: some View {
         Button(action: handleTap) {
@@ -73,6 +74,18 @@ struct ContactCardView: View {
                 }
                 
                 textOverlay
+                
+                // Add attention indicator for contacts needing love
+                if contact.daysSinceLastContact > 30 {
+                    VStack {
+                        HStack {
+                            Spacer()
+                            needsAttentionIndicator
+                                .padding(.keetSpacingM)
+                        }
+                        Spacer()
+                    }
+                }
             }
         }
         .aspectRatio(0.75, contentMode: .fill)
@@ -109,33 +122,6 @@ struct ContactCardView: View {
         }
     }
     
-    private var coolOverlay: some View {
-        RadialGradient(
-            colors: [
-                Color.clear,
-                Color(red: 0.6, green: 0.85, blue: 1.0).opacity(contact.coolOverlayOpacity * 0.45),
-                Color(red: 0.5, green: 0.75, blue: 0.95).opacity(contact.coolOverlayOpacity * 1.5),
-            ],
-            center: .center,
-            startRadius: 10,
-            endRadius: 180
-        )
-        .blendMode(.screen)
-    }
-    
-    private var warmOverlay: some View {
-        RadialGradient(
-            colors: [
-                Color.clear,
-                Color(red: 1.0, green: 0.75, blue: 0.4).opacity(0.25),
-                Color(red: 1.0, green: 0.6, blue: 0.3).opacity(0.6)
-            ],
-            center: .center,
-            startRadius: 10,
-            endRadius: 400
-        )
-        .blendMode(.screen)
-    }
     
     private var gradientOverlay: some View {
         LinearGradient(
@@ -169,10 +155,80 @@ struct ContactCardView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
         .padding(.keetSpacingL)
     }
-}
+    
+    private var coolOverlay: some View {
+        RadialGradient(
+            colors: [
+                Color.clear,
+                Color(red: 0.6, green: 0.85, blue: 1.0).opacity(contact.coolOverlayOpacity * 0.45),
+                Color(red: 0.5, green: 0.75, blue: 0.95).opacity(contact.coolOverlayOpacity * 1.5),
+            ],
+            center: .center,
+            startRadius: 10,
+            endRadius: 180
+        )
+        .blendMode(.screen)
+    }
+    
+    private var warmOverlay: some View {
+        RadialGradient(
+            colors: [
+                Color.clear,
+                Color(red: 1.0, green: 0.75, blue: 0.4).opacity(0.25),
+                Color(red: 1.0, green: 0.6, blue: 0.3).opacity(0.6)
+            ],
+            center: .center,
+            startRadius: 10,
+            endRadius: 400
+        )
+        .blendMode(.screen)
+    }
 
-#Preview {
-    ContactCardView(contact: Contact(name: "Test")){
-        print("f;adls")
+    private var needsAttentionIndicator: some View {
+        ZStack {
+            // Pulsing outer ring
+            Circle()
+                .stroke(Color.terracotta.opacity(0.4), lineWidth: 3)
+                .frame(width: 12, height: 12)
+                .scaleEffect(isPulsing ? 2.5 : 1.0)
+                .opacity(isPulsing ? 0 : 1)
+            
+            // Solid center dot
+            Circle()
+                .fill(Color.terracotta)
+                .frame(width: 12, height: 12)
+        }
+        .onAppear {
+            withAnimation(
+                .easeOut(duration: 1.5)
+                .repeatForever(autoreverses: false)
+            ) {
+                isPulsing = true
+            }
+        }
     }
 }
+
+//#Preview("Today - Warm Glow") {
+//    ContactCardView(contact: Contact(name: "Just Contacted", lastContacted: Date())) {
+//        print("tapped")
+//    }
+//    .frame(width: 200, height: 267)
+//    .padding()
+//}
+//#Preview("20 Days - Cool Tint") {
+//    ContactCardView(contact: Contact(name: "Getting Cold", lastContacted: Date().addingTimeInterval(-1728000))) { // 20 days
+//        print("tapped")
+//    }
+//    .frame(width: 200, height: 267)
+//    .padding()
+//}
+
+#Preview("40 Days - Needs Attention") {
+    ContactCardView(contact: Contact(name: "Needs Love", lastContacted: Date().addingTimeInterval(-3456000))) { // 40 days
+        print("tapped")
+    }
+    .frame(width: 200, height: 267)
+    .padding()
+}
+

@@ -12,7 +12,7 @@ struct EmptyStateView: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        VStack(spacing: .keetSpacingXL) {
+        VStack(spacing: .keetSpacingL) {
             Spacer()
             
             // App Icon
@@ -37,22 +37,23 @@ struct EmptyStateView: View {
                 .font(.headline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+                .padding(.bottom, 24)
             
             // Tutorial Steps
             VStack(alignment: .leading, spacing: .keetSpacingL) {
                 TutorialRow(
                     icon: "person.crop.circle.badge.plus",
-                    text: "Add people you want to keep in touch with"
+                    text: "Add the people who matter most to you"
                 )
                 
                 TutorialRow(
-                    icon: "calendar.badge.clock",
-                    text: "Tap when you've reached out to them"
+                    icon: "hand.tap",
+                    text: "Tap a contact each time you connect with them"
                 )
                 
                 TutorialRow(
-                    icon: "flame",
-                    text: "Contacts you haven't talked to in a while will start to fade",
+                    icon: "thermometer.medium",
+                    text: "Watch relationships stay warm or grow cold over time"
                 )
             }
             .padding()
@@ -65,7 +66,7 @@ struct EmptyStateView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal)
+                .padding()
             
             Spacer()
         }

@@ -16,7 +16,7 @@ enum ViewMode {
 
 enum ContactFilter: String, CaseIterable {
     case all = "All"
-    case burning = "🔥 Burning"
+    case burning = "🔥 Hot"
     case warm = "☀️ Warm"
     case cooling = "🌙 Cooling"
     case needsLove = "💙 Needs Love"
@@ -106,10 +106,8 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
-                // Background + Scrollable Content
                 ScrollView {
                     VStack(spacing: 0) {
-                        // Spacer to push content below filter bar
                         if !contacts.list.isEmpty {
                             Color.clear.frame(height: 50)
                         }
@@ -123,7 +121,6 @@ struct ContentView: View {
                 // Floating Filter Bar on top
                 if !contacts.list.isEmpty {
                     filterBar
-                        .padding(.horizontal)
                         .padding(.top, 8)
                         .padding(.bottom, 12)
                 }
@@ -235,7 +232,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .padding(.horizontal, 4)
+            .padding(.horizontal, .keetSpacingL)
         }
     }
 }

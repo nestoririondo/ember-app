@@ -188,7 +188,7 @@ extension Contact {
         
         switch daysSince {
         case 0...1:
-            return 1.0
+            return 1.1
         case 2...3:
             return 0.95
         case 4...7:
