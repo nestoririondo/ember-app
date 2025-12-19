@@ -15,11 +15,11 @@ struct ContentView: View {
     @AppStorage("viewMode") private var viewMode: ViewMode = .bigGrid
     @AppStorage("activeFilter") private var activeFilter: ContactFilter = .all
     
-    private func handleSaveContact(contact: Contact?, name: String, imageData: Data, lastContacted: Date) {
+    private func handleSaveContact(contact: Contact?, name: String, imageData: Data, lastContacted: Date, category: ContactCategory) {
         if let existingContact = contact, !existingContact.name.isEmpty {
-            contacts.updateContact(existingContact, name: name, imageData: imageData, lastContacted: lastContacted)
+            contacts.updateContact(existingContact, name: name, imageData: imageData, lastContacted: lastContacted, category: category)
         } else {
-            let newContact = Contact(name: name, imageData: imageData, lastContacted: lastContacted)
+            let newContact = Contact(name: name, imageData: imageData, lastContacted: lastContacted, category: category)
             contacts.addContact(newContact)
         }
     }
@@ -93,8 +93,8 @@ struct ContentView: View {
         }
         .tint(.terracotta)
         .sheet(item: $contactToEdit) { contact in
-            ManualEntryView(contact: contact) { name, imageData, lastContacted in
-                handleSaveContact(contact: contact, name: name, imageData: imageData, lastContacted: lastContacted)
+            ManualEntryView(contact: contact) { name, imageData, lastContacted, category in
+                handleSaveContact(contact: contact, name: name, imageData: imageData, lastContacted: lastContacted, category: category)
             }
         }
         .sheet(item: $contactForDatePicker) { contact in

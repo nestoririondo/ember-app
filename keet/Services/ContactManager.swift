@@ -17,10 +17,11 @@ class ContactManager {
         save()
     }
     
-    func updateContact(_ contact: Contact, name: String, imageData: Data?, lastContacted: Date) {
+    func updateContact(_ contact: Contact, name: String, imageData: Data?, lastContacted: Date, category: ContactCategory) {
         if let index = list.firstIndex(where: { $0.id == contact.id }) {
             list[index].name = name
             list[index].imageData = imageData
+            list[index].category = category
             
             // Replace the last interaction date with the new one
             if !list[index].interactions.isEmpty {
@@ -42,20 +43,6 @@ class ContactManager {
     func updateLastContactedYesterday(for contact: Contact) {
         if let index = list.firstIndex(of: contact) {
             list[index].interactions.append(Calendar.current.date(byAdding: .day, value: -1, to: Date())!)
-            save()
-        }
-    }
-    
-    func updateContact(_ contact: Contact, name: String, imageData: Data, lastContacted: Date) {
-        if let index = list.firstIndex(where: { $0.id == contact.id }) {
-            list[index].name = name
-            list[index].imageData = imageData
-            // Replace the last interaction date
-            if !list[index].interactions.isEmpty {
-                list[index].interactions[list[index].interactions.count - 1] = lastContacted
-            } else {
-                list[index].interactions.append(lastContacted)
-            }
             save()
         }
     }
@@ -83,8 +70,19 @@ class ContactManager {
         
         do {
             let data = try Data(contentsOf: saveFileURL)
-            list = try JSONDecoder().decode([Contact].self, from: data)
-            print("✅ Loaded \(list.count) contacts")
+            
+            // Try to decode with new format
+            do {
+                list = try JSONDecoder().decode([Contact].self, from: data)
+                print("✅ Loaded \(list.count) contacts with new format")
+            } catch {
+                // Migration: Try to decode old format without category
+                print("⚠️ Attempting to migrate old data format...")
+                list = try migrateOldFormat(from: data)
+                print("✅ Successfully migrated \(list.count) contacts")
+                // Save in new format
+                save()
+            }
             
             // Validate data integrity
             validateContacts()
@@ -92,6 +90,29 @@ class ContactManager {
         } catch {
             print("⚠️ Failed to load: \(error.localizedDescription)")
             handleCorruptedData()
+        }
+    }
+    
+    private func migrateOldFormat(from data: Data) throws -> [Contact] {
+        // Decode old contacts (without category field)
+        struct OldContact: Decodable {
+            let id: UUID
+            var name: String
+            var imageData: Data?
+            var interactions: [Date]
+        }
+        
+        let oldContacts = try JSONDecoder().decode([OldContact].self, from: data)
+        
+        // Convert to new format with default category
+        return oldContacts.map { old in
+            Contact(
+                id: old.id,
+                name: old.name,
+                imageData: old.imageData,
+                interactions: old.interactions,
+                category: .friends  // Default to friends for migrated data
+            )
         }
     }
     

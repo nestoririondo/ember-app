@@ -9,11 +9,24 @@
 import SwiftUI
 import Foundation
 
+enum ContactCategory: String, Codable, CaseIterable {
+    case family = "Family"
+    case friends = "Friends"
+    
+    var icon: String {
+        switch self {
+        case .family: return "house.fill"
+        case .friends: return "person.2.fill"
+        }
+    }
+}
+
 struct Contact: Identifiable, Equatable, Codable {
     let id: UUID  // No default value - will be set in initializers
     var name: String
     var imageData: Data?
     var interactions: [Date] = []  // Array of all interaction dates (not optional!)
+    var category: ContactCategory = .friends  // Default to friends
     
     /// Most recent interaction date
     var lastContacted: Date {
@@ -58,19 +71,21 @@ struct Contact: Identifiable, Equatable, Codable {
     // MARK: - Initializers
     
     /// Create a new contact with optional initial interaction
-    init(name: String, imageData: Data? = nil, lastContacted: Date = Date()) {
+    init(name: String, imageData: Data? = nil, lastContacted: Date = Date(), category: ContactCategory = .friends) {
         self.id = UUID()  // Generate new ID
         self.name = name
         self.imageData = imageData
         self.interactions = [lastContacted]
+        self.category = category
     }
     
     /// Create contact with existing interactions (for loading from storage)
-    init(id: UUID, name: String, imageData: Data? = nil, interactions: [Date]) {
+    init(id: UUID, name: String, imageData: Data? = nil, interactions: [Date], category: ContactCategory = .friends) {
         self.id = id
         self.name = name
         self.imageData = imageData
         self.interactions = interactions
+        self.category = category
     }
 }
 
@@ -89,27 +104,32 @@ extension Contact {
             Contact(
                 name: "John Doe",
                 imageData: UIImage.dataFromResource(.test1), // Converts Resource to Data
-                lastContacted: Date().addingTimeInterval(-3600)  // 1 hour ago
+                lastContacted: Date().addingTimeInterval(-3600),  // 1 hour ago
+                category: .family
             ),
             Contact(
                 name: "Jane Smith",
                 imageData: UIImage.dataFromResource(.test2), // Converts Resource to Data
-                lastContacted: Date().addingTimeInterval(-864000)  // 10 days ago
+                lastContacted: Date().addingTimeInterval(-864000),  // 10 days ago
+                category: .friends
             ),
             Contact(
                 name: "Bob Johnson",
                 imageData: UIImage.dataFromResource(.test3), // Converts Resource to Data
-                lastContacted: Date().addingTimeInterval(-6048000)  // 20 days ago
+                lastContacted: Date().addingTimeInterval(-6048000),  // 20 days ago
+                category: .family
             ),
             Contact(
                 name: "Alice Williams",
-                lastContacted: Date().addingTimeInterval(-6048000)  // 70 days ago
+                lastContacted: Date().addingTimeInterval(-6048000),  // 70 days ago
+                category: .friends
             ),
             Contact(
                 name: "Alice Williams2",
                 imageData: UIImage.dataFromResource(.test4), // Converts Resource to Data
 
-                lastContacted: Date().addingTimeInterval(-554000)  // 70 days ago
+                lastContacted: Date().addingTimeInterval(-554000),  // 70 days ago
+                category: .friends
             )
         ]
     }

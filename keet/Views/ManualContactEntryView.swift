@@ -15,21 +15,23 @@ struct ManualEntryView: View {
     @State var name: String
     @State var selectedImage: UIImage?
     @State var lastContacted: Date
+    @State var selectedCategory: ContactCategory
     @State private var avatarItem: PhotosPickerItem? = nil
     @State private var isShowingContactImport: Bool = false
     @State private var isShowingCustomDatePicker: Bool = false
     @State private var showValidationTooltip: Bool = false
     
     let contact: Contact?
-    let onSave: (String, Data, Date) -> Void
+    let onSave: (String, Data, Date, ContactCategory) -> Void
     
-    init(contact: Contact?, onSave: @escaping (String, Data, Date) -> Void) {
+    init(contact: Contact?, onSave: @escaping (String, Data, Date, ContactCategory) -> Void) {
         self.contact = contact
         self.onSave = onSave
         
         // Initialize state from contact (which might be empty for create mode)
         _name = State(initialValue: contact?.name ?? "")
         _lastContacted = State(initialValue: contact?.lastContacted ?? Date())
+        _selectedCategory = State(initialValue: contact?.category ?? .friends)
         
         // Convert image data to UIImage if available
         if let contact = contact,
@@ -73,7 +75,7 @@ struct ManualEntryView: View {
     private func handleAdd() {
         if isNameValid {
             let imageData = selectedImage?.jpegData(compressionQuality: 0.8) ?? Data()
-            onSave(name.trimmingCharacters(in: .whitespaces), imageData, lastContacted)
+            onSave(name.trimmingCharacters(in: .whitespaces), imageData, lastContacted, selectedCategory)
             dismiss()
         } else {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
@@ -122,9 +124,9 @@ struct ManualEntryView: View {
             VStack(spacing: 16) {
                 enterNameTextfield
                 
-                pickDateButton
+                categoryPicker
                 
-                Spacer()
+                pickDateButton
                 
                 importContactButton
             }
@@ -216,7 +218,42 @@ struct ManualEntryView: View {
                 }
             }
     }
-
+    
+    private var categoryPicker: some View {
+        HStack(spacing: 12) {
+            ForEach(ContactCategory.allCases, id: \.self) { category in
+                Button {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        selectedCategory = category
+                    }
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: category.icon)
+                            .font(.system(size: 16))
+                        Text(category.rawValue)
+                            .font(.keetBody)
+                    }
+                    .foregroundStyle(
+                        selectedCategory == category ? Color.white : Color.warmBrown
+                    )
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(
+                        selectedCategory == category ? Color.terracotta : Color.cardBackground
+                    )
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(
+                                selectedCategory == category ? Color.clear : Color.warmBrown.opacity(0.1),
+                                lineWidth: 1
+                            )
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
     
     private var pickDateButton: some View {
         Button {
