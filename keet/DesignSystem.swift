@@ -190,17 +190,17 @@ extension Contact {
         case 0...1:
             return 1.1
         case 2...3:
-            return 0.90
+            return 0.95
         case 4...7:
-            return 0.8
+            return 0.90
         case 8...14:
-            return 0.70
+            return 0.80
         case 15...30:
-            return 0.60
+            return 0.70
         case 30...60:
             return 0.50
         default:
-            return 0.40
+            return 0.30
         }
     }
     
@@ -219,9 +219,9 @@ extension Contact {
         case 15...30:
             return 0.4
         case 30...60:
-            return 0.5
+            return 0.55
         default:
-            return 0.6
+            return 0.70
         }
     }
     

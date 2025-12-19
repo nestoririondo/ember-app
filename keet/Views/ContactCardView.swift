@@ -11,45 +11,34 @@ struct ContactCardView: View {
     let contact: Contact
     let onTap: () -> Void
     
-    @State private var isPressed: Bool = false
-    
+    @State private var isPressed = false
+        
     var body: some View {
-        Button(action: handleTap) {
-            cardContent
-        }
-        .buttonStyle(.plain)
-        .scaleEffect(isPressed ? 0.94 : 1)
-        .rotation3DEffect(
-            .degrees(isPressed ? 4 : 0),
-            axis: (x: 1, y: 0, z: 0)
-        )
-        .animation(
-            .spring(
-                response: 0.15,
-                dampingFraction: 0.25,
-                blendDuration: 2
-            ),
-            value: isPressed
-        )
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in
-                    if !isPressed {
-                        isPressed = true
+        cardContent
+            .scaleEffect(isPressed ? 0.94 : 1)
+            .rotation3DEffect(
+                .degrees(isPressed ? 4 : 0),
+                axis: (x: 1, y: 0, z: 0)
+            )
+            .animation(.spring(response: 0.2, dampingFraction: 0.5), value: isPressed)
+            .onTapGesture {
+                // Trigger press animation
+                withAnimation(.spring(response: 0.15, dampingFraction: 0.5)) {
+                    isPressed = true
+                }
+                
+                // Reset after a brief moment
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                        isPressed = false
                     }
                 }
-                .onEnded { _ in
-                    isPressed = false
-                }
-        )
-        .onLongPressGesture(minimumDuration: 0.5, maximumDistance: 10) {
-            // Context menu will appear, reset the pressed state
-        } onPressingChanged: { pressing in
-            if !pressing {
-                isPressed = false
+                
+                handleTap()
             }
-        }
     }
+    
+
     
     private func handleTap() {
         onTap()
