@@ -185,43 +185,22 @@ extension Contact {
     /// Returns saturation level that decreases as contact ages (1.0 = full color, 0.0 = grayscale)
     var agingSaturation: Double {
         let daysSince = Calendar.current.dateComponents([.day], from: lastContacted, to: Date()).day ?? 0
-        
+
         switch daysSince {
         case 0...1:
             return 1.1
         case 2...3:
-            return 0.95
-        case 4...7:
-            return 0.9
-        case 8...14:
-            return 0.85
-        case 15...30:
-            return 0.80
-        case 30...60:
-            return 0.75
-        default:
-            return 0.65
-        }
-    }
-    
-    var agingOpacity: Double {
-        let daysSince = Calendar.current.dateComponents([.day], from: lastContacted, to: Date()).day ?? 0
-        
-        switch daysSince {
-        case 0...1:
-            return 1.0
-        case 2...3:
             return 0.90
         case 4...7:
-            return 0.80
+            return 0.8
         case 8...14:
-            return 0.65
+            return 0.70
         case 15...30:
-            return 0.50
+            return 0.60
         case 30...60:
-            return 0.35
+            return 0.50
         default:
-            return 0.15
+            return 0.40
         }
     }
     
@@ -243,6 +222,25 @@ extension Contact {
             return 0.5
         default:
             return 0.6
+        }
+    }
+    
+    /// Frost intensity for border effect (0.0 = no frost, 1.0 = maximum frost)
+    /// Only applies to contacts that are getting cold (15+ days)
+    var frostIntensity: Double {
+        let daysSince = Calendar.current.dateComponents([.day], from: lastContacted, to: Date()).day ?? 0
+        
+        switch daysSince {
+        case 0...14:
+            return 0.0  // No frost for recent contacts
+        case 15...21:
+            return 0.3  // Light frost starting
+        case 22...30:
+            return 0.5  // Medium frost
+        case 31...45:
+            return 0.7  // Heavy frost
+        default:
+            return 1.0  // Maximum frost for very old contacts
         }
     }
     

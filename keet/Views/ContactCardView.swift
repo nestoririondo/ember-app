@@ -12,7 +12,6 @@ struct ContactCardView: View {
     let onTap: () -> Void
     
     @State private var isPressed: Bool = false
-    @State private var isPulsing: Bool = false
     
     var body: some View {
         Button(action: handleTap) {
@@ -75,16 +74,9 @@ struct ContactCardView: View {
                 
                 textOverlay
                 
-                // Add attention indicator for contacts needing love
-                if contact.daysSinceLastContact > 30 {
-                    VStack {
-                        HStack {
-                            Spacer()
-                            needsAttentionIndicator
-                                .padding(.keetSpacingM)
-                        }
-                        Spacer()
-                    }
+                // Add frosty border glow for cold contacts
+                if contact.frostIntensity > 0 {
+                    frostyBorderGlow
                 }
             }
         }
@@ -92,7 +84,12 @@ struct ContactCardView: View {
         .clipShape(RoundedRectangle(cornerRadius: .keetCornerLarge))
         .overlay(
             RoundedRectangle(cornerRadius: .keetCornerLarge)
-                .strokeBorder(contact.agingColor.opacity(0.3), lineWidth: 2)
+                .strokeBorder(
+                    contact.frostIntensity > 0 
+                        ? Color(red: 0.7, green: 0.85, blue: 0.98)  // Glacier ice blue
+                        : contact.agingColor.opacity(0.8),  // Visible warm border
+                    lineWidth: 3
+                )
         )
         .keetShadow(intensity: .medium)
         .animation(.easeInOut(duration: 0.3), value: contact.lastContacted)
@@ -108,7 +105,6 @@ struct ContactCardView: View {
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .clipped()
                 .saturation(contact.agingSaturation)
-                .opacity(contact.agingOpacity)
         } else {
             ZStack {
                 contact.agingColor.opacity(0.2)
@@ -184,27 +180,62 @@ struct ContactCardView: View {
         .blendMode(.screen)
     }
 
-    private var needsAttentionIndicator: some View {
-        ZStack {
-            // Pulsing outer ring
-            Circle()
-                .stroke(Color.terracotta.opacity(0.4), lineWidth: 3)
-                .frame(width: 12, height: 12)
-                .scaleEffect(isPulsing ? 2.5 : 1.0)
-                .opacity(isPulsing ? 0 : 1)
+    
+    private var frostyBorderGlow: some View {
+        let intensity = contact.frostIntensity
+        
+        return ZStack {
+            // Layer 1: Strong glacier blue glow from top-left
+            RoundedRectangle(cornerRadius: .keetCornerLarge)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.7, green: 0.85, blue: 0.98).opacity(1.0 * intensity),  // Full opacity
+                            Color(red: 0.75, green: 0.88, blue: 0.98).opacity(0.8 * intensity),
+                            Color(red: 0.8, green: 0.9, blue: 0.98).opacity(0.5 * intensity),
+                            Color.white.opacity(0.3 * intensity),
+                            Color.clear
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .center
+                    ),
+                    lineWidth: 20
+                )
+                .blur(radius: 8)
             
-            // Solid center dot
-            Circle()
-                .fill(Color.terracotta)
-                .frame(width: 12, height: 12)
-        }
-        .onAppear {
-            withAnimation(
-                .easeOut(duration: 1.5)
-                .repeatForever(autoreverses: false)
-            ) {
-                isPulsing = true
-            }
+            // Layer 2: Glacier blue glow from bottom-right
+            RoundedRectangle(cornerRadius: .keetCornerLarge)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.7, green: 0.85, blue: 0.98).opacity(1.0 * intensity),
+                            Color(red: 0.75, green: 0.88, blue: 0.98).opacity(0.8 * intensity),
+                            Color(red: 0.8, green: 0.9, blue: 0.98).opacity(0.5 * intensity),
+                            Color.white.opacity(0.3 * intensity),
+                            Color.clear
+                        ],
+                        startPoint: .bottomTrailing,
+                        endPoint: .center
+                    ),
+                    lineWidth: 20
+                )
+                .blur(radius: 8)
+            
+            // Layer 3: Sharp inner frost ring
+            RoundedRectangle(cornerRadius: .keetCornerLarge)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.65, green: 0.82, blue: 0.96).opacity(0.9 * intensity),
+                            Color.white.opacity(0.6 * intensity),
+                            Color.clear
+                        ],
+                        startPoint: .top,
+                        endPoint: .center
+                    ),
+                    lineWidth: 12
+                )
+                .blur(radius: 3)
         }
     }
 }
@@ -231,4 +262,5 @@ struct ContactCardView: View {
     .frame(width: 200, height: 267)
     .padding()
 }
+
 

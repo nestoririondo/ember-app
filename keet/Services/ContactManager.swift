@@ -10,7 +10,6 @@ import SwiftData
 
 @Observable
 class ContactManager {
-    // take data from SwiftData
     var list: [Contact] = []
     
     func addContact(_ contact: Contact) {
@@ -76,27 +75,94 @@ class ContactManager {
     }
     
     private func load() {
+        guard FileManager.default.fileExists(atPath: saveFileURL.path) else {
+            print("ℹ️ No saved data found (first launch)")
+            list = []
+            return
+        }
+        
         do {
             let data = try Data(contentsOf: saveFileURL)
             list = try JSONDecoder().decode([Contact].self, from: data)
             print("✅ Loaded \(list.count) contacts")
+            
+            // Validate data integrity
+            validateContacts()
+            
         } catch {
-            print("ℹ️ No saved data found (this is normal on first launch)")
-            list = []
+            print("⚠️ Failed to load: \(error.localizedDescription)")
+            handleCorruptedData()
         }
     }
     
+    private func validateContacts() {
+        // Remove any invalid contacts
+        list.removeAll { contact in
+            let isInvalid = contact.name.isEmpty || contact.interactions.isEmpty
+            if isInvalid {
+                print("⚠️ Removing invalid contact: \(contact.id)")
+            }
+            return isInvalid
+        }
+    }
+    
+    private func handleCorruptedData() {
+        print("🔧 Attempting to recover data...")
+        
+        // Try to backup the corrupted file
+        let backupURL = saveFileURL.deletingPathExtension().appendingPathExtension("backup.json")
+        try? FileManager.default.copyItem(at: saveFileURL, to: backupURL)
+        print("📦 Backed up corrupted data to: \(backupURL.path)")
+        
+        // Delete corrupted file
+        try? FileManager.default.removeItem(at: saveFileURL)
+        print("🗑️ Removed corrupted data file")
+        
+        // Start fresh
+        list = []
+        print("✨ Starting with empty contact list")
+    }
+    
     private func save() {
+        // Validate before saving
+        let validContacts = list.filter { !$0.name.isEmpty && !$0.interactions.isEmpty }
+        
         do {
-            let data = try JSONEncoder().encode(list)
-            try data.write(to: saveFileURL)
-            print("✅ Saved to: \(saveFileURL.path)")
+            let data = try JSONEncoder().encode(validContacts)
+            try data.write(to: saveFileURL, options: .atomic)
+            print("✅ Saved \(validContacts.count) contacts")
         } catch {
-            print("❌ Failed to save: \(error)")
+            print("❌ Failed to save: \(error.localizedDescription)")
         }
     }
     
     init() {
+        // Wrap load in a do-catch to prevent crashes on launch
+        do {
+            try loadSafely()
+        } catch {
+            print("❌ Critical error during init: \(error)")
+            // Emergency fallback: start with empty list
+            list = []
+            print("🆘 Emergency reset: Started with empty list")
+        }
+    }
+    
+    private func loadSafely() throws {
         load()
+    }
+    
+    // MARK: - Debug Helpers
+    
+    /// Clear all saved data (useful for debugging)
+    func clearAllData() {
+        list = []
+        try? FileManager.default.removeItem(at: saveFileURL)
+        print("🗑️ All data cleared")
+    }
+    
+    /// Get the file path for debugging
+    func getDataPath() -> String {
+        return saveFileURL.path
     }
 }
