@@ -126,6 +126,7 @@ struct ContentView: View {
                     contacts.deleteContact(contact)
                 }
             )
+            .animation(.spring(response: 0.3), value: viewMode)
         }
     }
     

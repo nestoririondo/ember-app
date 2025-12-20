@@ -100,45 +100,47 @@ struct CategorySection: View {
             .buttonStyle(.plain)
             
             // Grid of contacts
-            if !isCollapsed {
-                LazyVGrid(columns: columns, spacing: .keetSpacingM) {
-                    ForEach(contacts) { contact in
-                        ContactCardView(contact: contact) {
-                            onContactTap(contact)
+            LazyVGrid(columns: columns, spacing: .keetSpacingM) {
+                ForEach(contacts) { contact in
+                    ContactCardView(contact: contact) {
+                        onContactTap(contact)
+                    }
+                    .contextMenu {
+                        Button(role: .confirm) {
+                            onEditContact(contact)
+                        } label: {
+                            Label("Edit", systemImage: "square.and.pencil")
                         }
-                        .contextMenu {
-                            Button(role: .confirm) {
-                                onEditContact(contact)
-                            } label: {
-                                Label("Edit", systemImage: "square.and.pencil")
+                        
+                        Button(role: .confirm) {
+                            onSetDate(contact)
+                        } label: {
+                            Label("Set last contact date", systemImage: "calendar")
+                        }
+                        
+                        Button(role: .confirm) {
+                            onContactedYesterday(contact)
+                        } label: {
+                            Label("Contacted yesterday", systemImage: "calendar.badge.clock")
+                        }
+                        
+                        Divider()
+                        
+                        Button(role: .destructive) {
+                            withAnimation(.spring(response: 0.3)) {
+                                onDeleteContact(contact)
                             }
-                            
-                            Button(role: .confirm) {
-                                onSetDate(contact)
-                            } label: {
-                                Label("Set last contact date", systemImage: "calendar")
-                            }
-                            
-                            Button(role: .confirm) {
-                                onContactedYesterday(contact)
-                            } label: {
-                                Label("Contacted yesterday", systemImage: "calendar.badge.clock")
-                            }
-                            
-                            Divider()
-                            
-                            Button(role: .destructive) {
-                                withAnimation(.spring(response: 0.3)) {
-                                    onDeleteContact(contact)
-                                }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
                         }
                     }
+                    .opacity(isCollapsed ? 0 : 1)
                 }
             }
+            .frame(height: isCollapsed ? 0 : nil)
+            .clipped()
         }
+        .animation(.easeInOut(duration: 0.3), value: isCollapsed)
     }
 }
 
