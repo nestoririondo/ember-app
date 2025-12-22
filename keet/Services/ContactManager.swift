@@ -17,11 +17,12 @@ class ContactManager {
         save()
     }
     
-    func updateContact(_ contact: Contact, name: String, imageData: Data?, lastContacted: Date, category: ContactCategory) {
+    func updateContact(_ contact: Contact, name: String, imageData: Data?, lastContacted: Date, category: ContactCategory, birthdayDate: Date?) {
         if let index = list.firstIndex(where: { $0.id == contact.id }) {
             list[index].name = name
             list[index].imageData = imageData
             list[index].category = category
+            list[index].birthdayDate = birthdayDate
             
             // Replace the last interaction date with the new one
             if !list[index].interactions.isEmpty {

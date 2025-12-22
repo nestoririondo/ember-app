@@ -8,28 +8,35 @@
 import SwiftUI
 
 struct DatePickerView: View {
-    let initialDate: Date
+    let initialDate: Date?
     let onDateSelected: (Date) -> Void
+    var title: String
     @Environment(\.dismiss) private var dismiss
     @State private var selectedDate: Date
     
-    init(initialDate: Date, onDateSelected: @escaping (Date) -> Void) {
+    init(initialDate: Date?, onDateSelected: @escaping (Date) -> Void, title: String) {
         self.initialDate = initialDate
         self.onDateSelected = onDateSelected
-        _selectedDate = State(initialValue: initialDate)
+        self.title = title
+        _selectedDate = State(initialValue: initialDate ?? Date())
     }
     
     var body: some View {
-        DatePicker(
-            "Select Date",
-            selection: $selectedDate,
-            in: ...Date(),
-            displayedComponents: .date
-        )
-        .datePickerStyle(.graphical)
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-        .background(Color.softCream)
+        NavigationStack {
+            ScrollView {
+                DatePicker(
+                    "Select Date",
+                    selection: $selectedDate,
+                    in: ...Date(),
+                    displayedComponents: .date
+                )
+                .datePickerStyle(.graphical)
+                .padding()
+            }
+            .background(Color.softCream)
+            .navigationTitle(title ?? "Select Date")
+            .navigationBarTitleDisplayMode(.inline)
+        }
         .onChange(of: selectedDate) { oldValue, newValue in
             onDateSelected(newValue)
             dismiss()

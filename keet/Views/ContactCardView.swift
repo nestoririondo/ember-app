@@ -38,8 +38,6 @@ struct ContactCardView: View {
             }
     }
     
-
-    
     private func handleTap() {
         onTap()
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
@@ -49,10 +47,7 @@ struct ContactCardView: View {
         GeometryReader { geometry in
             ZStack {
                 backgroundContent(geometry: geometry)
-                
-                if contact.imageData != nil {
-                    gradientOverlay
-                }
+
                 
                 // Show warm overlay for contacts contacted today
                 if contact.daysSinceLastContact == 0 {
@@ -61,12 +56,19 @@ struct ContactCardView: View {
                     coolOverlay
                 }
                 
-                textOverlay
-                
                 // Add frosty border glow for cold contacts
                 if contact.frostIntensity > 0 {
                     frostyBorderGlow
                 }
+                
+                
+                if contact.imageData != nil {
+                    gradientOverlay
+                }
+                
+                textOverlay
+                
+                birthdayChip
             }
         }
         .aspectRatio(0.75, contentMode: .fill)
@@ -106,7 +108,44 @@ struct ContactCardView: View {
             }
         }
     }
+
+    @ViewBuilder
+    private var birthdayChip: some View {
+        if let birthdayText = contact.birthdayText {
+            let isToday = birthdayText == "Today!"
+            
+            HStack(spacing: 4) {
+                Text("🎁")
+                    .font(.system(size: 12))
+                Text(birthdayText)
+                    .font(.caption)
+                    .fontWeight(.medium)
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                Capsule()
+                    .fill(
+                        isToday
+                            ? Color(red: 1.0, green: 0.6, blue: 0.3)  // Warm orange for today
+                            : Color.black.opacity(0.5)  // Dark for upcoming
+                    )
+            )
+            .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+            .scaleEffect(isToday ? 1.05 : 1.0)
+            .animation(
+                isToday
+                    ? .easeInOut(duration: 1.0).repeatForever(autoreverses: true)
+                    : .default,
+                value: isToday
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            .padding(.keetSpacingS)
+        }
+    }
     
+
     
     private var gradientOverlay: some View {
         LinearGradient(
@@ -245,9 +284,11 @@ struct ContactCardView: View {
 //}
 
 #Preview("40 Days - Needs Attention") {
-    ContactCardView(contact: Contact(name: "Needs Love", lastContacted: Date().addingTimeInterval(-3456000))) { // 40 days
+    ContactCardView(contact: Contact(name: "Needs Love", lastContacted: Date().addingTimeInterval(-3456000), birthdayDate: Date().addingTimeInterval(650000)
+                                    )) { // 40 days
         print("tapped")
     }
+    
     .frame(width: 200, height: 267)
     .padding()
 }

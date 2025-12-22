@@ -15,11 +15,11 @@ struct ContentView: View {
     @AppStorage("viewMode") private var viewMode: ViewMode = .bigGrid
     @AppStorage("activeFilter") private var activeFilter: ContactFilter = .all
     
-    private func handleSaveContact(contact: Contact?, name: String, imageData: Data, lastContacted: Date, category: ContactCategory) {
+    private func handleSaveContact(contact: Contact?, name: String, imageData: Data, lastContacted: Date, category: ContactCategory, birthdayDate: Date?) {
         if let existingContact = contact, !existingContact.name.isEmpty {
-            contacts.updateContact(existingContact, name: name, imageData: imageData, lastContacted: lastContacted, category: category)
+            contacts.updateContact(existingContact, name: name, imageData: imageData, lastContacted: lastContacted, category: category, birthdayDate: birthdayDate)
         } else {
-            let newContact = Contact(name: name, imageData: imageData, lastContacted: lastContacted, category: category)
+            let newContact = Contact(name: name, imageData: imageData, lastContacted: lastContacted, category: category, birthdayDate: birthdayDate)
             contacts.addContact(newContact)
         }
     }
@@ -93,14 +93,14 @@ struct ContentView: View {
         }
         .tint(.terracotta)
         .sheet(item: $contactToEdit) { contact in
-            ManualEntryView(contact: contact) { name, imageData, lastContacted, category in
-                handleSaveContact(contact: contact, name: name, imageData: imageData, lastContacted: lastContacted, category: category)
+            ManualEntryView(contact: contact) { name, imageData, lastContacted, category, birthdayDate in
+                handleSaveContact(contact: contact, name: name, imageData: imageData, lastContacted: lastContacted, category: category, birthdayDate: birthdayDate)
             }
         }
         .sheet(item: $contactForDatePicker) { contact in
             DatePickerView(
                 initialDate: contact.lastContacted,
-                onDateSelected: handlePickDate
+                onDateSelected: handlePickDate, title: "Set Last Contact Date"
             )
             .presentationDetents([.medium])
         }

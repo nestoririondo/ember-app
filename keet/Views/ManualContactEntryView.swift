@@ -16,15 +16,18 @@ struct ManualEntryView: View {
     @State var selectedImage: UIImage?
     @State var lastContacted: Date
     @State var selectedCategory: ContactCategory
+    @State var birthdayDate: Date?
     @State private var avatarItem: PhotosPickerItem? = nil
     @State private var isShowingContactImport: Bool = false
     @State private var isShowingCustomDatePicker: Bool = false
+    @State private var isShowingBirthdayDatePicker: Bool = false
     @State private var showValidationTooltip: Bool = false
+
     
     let contact: Contact?
-    let onSave: (String, Data, Date, ContactCategory) -> Void
+    let onSave: (String, Data, Date, ContactCategory, Date?) -> Void
     
-    init(contact: Contact?, onSave: @escaping (String, Data, Date, ContactCategory) -> Void) {
+    init(contact: Contact?, onSave: @escaping (String, Data, Date, ContactCategory, Date?) -> Void) {
         self.contact = contact
         self.onSave = onSave
         
@@ -32,6 +35,7 @@ struct ManualEntryView: View {
         _name = State(initialValue: contact?.name ?? "")
         _lastContacted = State(initialValue: contact?.lastContacted ?? Date())
         _selectedCategory = State(initialValue: contact?.category ?? .friends)
+        _birthdayDate = State(initialValue: contact?.birthdayDate)
         
         // Convert image data to UIImage if available
         if let contact = contact,
@@ -65,6 +69,13 @@ struct ManualEntryView: View {
         }
     }
     
+    private var formattedBirthdayDate: String {
+        guard let birthdayDate = birthdayDate else {
+            return "Not set"
+        }
+        return birthdayDate.formatted(date: .abbreviated, time: .omitted)
+    }
+    
     private func handleImportedContact(_ cnContact: CNContact) {
         name = "\(cnContact.givenName) \(cnContact.familyName)"
             .trimmingCharacters(in: .whitespaces)
@@ -75,7 +86,7 @@ struct ManualEntryView: View {
     private func handleAdd() {
         if isNameValid {
             let imageData = selectedImage?.jpegData(compressionQuality: 0.8) ?? Data()
-            onSave(name.trimmingCharacters(in: .whitespaces), imageData, lastContacted, selectedCategory)
+            onSave(name.trimmingCharacters(in: .whitespaces), imageData, lastContacted, selectedCategory, birthdayDate)
             dismiss()
         } else {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
@@ -109,8 +120,19 @@ struct ManualEntryView: View {
                 initialDate: lastContacted,
                 onDateSelected: { newDate in
                     lastContacted = newDate
-                }
+                },
+                title: "Set Last Contacted Date"
             )
+            .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $isShowingBirthdayDatePicker) {
+            DatePickerView(
+                initialDate: birthdayDate,
+                onDateSelected: { newDate in
+                    birthdayDate = newDate
+                },
+                title: "Set Birthday"
+                )
             .presentationDetents([.medium])
         }
     }
@@ -127,6 +149,8 @@ struct ManualEntryView: View {
                 categoryPicker
                 
                 pickDateButton
+                
+                setBirthdayButton
                 
                 importContactButton
             }
@@ -283,6 +307,36 @@ struct ManualEntryView: View {
         }
         .buttonStyle(.plain)
     }
+    
+    private var setBirthdayButton: some View {
+        Button {
+            isShowingBirthdayDatePicker = true
+        } label: {
+            HStack {
+                Image(systemName: "birthday.cake")
+                    .font(.system(size: 16))
+                Text("Birthday")
+                    .font(.keetBody)
+                Spacer()
+                Text(formattedBirthdayDate)
+                    .font(.keetBody)
+                    .foregroundStyle(Color.warmBrown.opacity(0.7))
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 12))
+            }
+            .foregroundStyle(Color.warmBrown)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.cardBackground)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.warmBrown.opacity(0.1), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+    
     
     private var importContactButton: some View {
         Button {
