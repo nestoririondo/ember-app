@@ -109,7 +109,7 @@ struct Contact: Identifiable, Equatable, Codable {
         case 2...6:
             return "\(daysUntil) days"
         case 7:
-            return "1 Week"
+            return "Next week"
         default:
             return nil  // Don't show if more than 7 days
         }

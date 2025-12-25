@@ -108,7 +108,7 @@ struct ManualEntryView: View {
             mainContent
         }
         .tint(.terracotta)
-        .presentationDetents([.medium])
+        .presentationDetents([.fraction(0.75)])
         
         .sheet(isPresented: $isShowingContactImport) {
             ContactPickerView { selectedContact in
@@ -138,25 +138,26 @@ struct ManualEntryView: View {
     }
     
     private var mainContent: some View {
-        VStack(spacing: 24) {
-            // MARK: - Photo Picker
-            photoPickerButton
-            
-            // MARK: - Information input
-            VStack(spacing: 16) {
-                enterNameTextfield
+        ScrollView {
+            VStack(spacing: 24) {
+                // MARK: - Photo Picker
+                photoPickerButton
                 
-                categoryPicker
+                // MARK: - Information input
+                VStack(spacing: 20) {
+                    enterNameTextfield
+                    
+                    categoryPicker
+                    
+                    // Date fields - Settings style
+                    dateFieldsSection
+                    
+                    importContactButton
+                }
+                .padding(.horizontal, 24)
                 
-                pickDateButton
-                
-                setBirthdayButton
-                
-                importContactButton
+                Spacer(minLength: 40)
             }
-            .padding(.horizontal, 24)
-            
-            Spacer()
         }
         .background(Color.softCream)
         .navigationTitle(isCreating ? "New Contact" : "Edit Contact")
@@ -174,6 +175,33 @@ struct ManualEntryView: View {
                 .fontWeight(.semibold)
             }
         }
+    }
+    
+    private var dateFieldsSection: some View {
+        VStack(spacing: 0) {
+            SettingsRowButton(
+                icon: "clock",
+                title: "Last contacted",
+                value: formattedDate,
+                onTap: { isShowingCustomDatePicker = true }
+            )
+            
+            Divider()
+                .padding(.leading, 52)
+            
+            SettingsRowButton(
+                icon: "birthday.cake",
+                title: "Birthday",
+                value: formattedBirthdayDate,
+                onTap: { isShowingBirthdayDatePicker = true }
+            )
+        }
+        .background(Color.cardBackground)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.warmBrown.opacity(0.1), lineWidth: 1)
+        )
     }
     
     private var photoPickerButton: some View {
@@ -279,65 +307,6 @@ struct ManualEntryView: View {
         }
     }
     
-    private var pickDateButton: some View {
-        Button {
-            isShowingCustomDatePicker = true
-        } label: {
-            HStack {
-                Image(systemName: "clock")
-                    .font(.system(size: 16))
-                Text("Last contacted")
-                    .font(.keetBody)
-                Spacer()
-                Text(formattedDate)
-                    .font(.keetBody)
-                    .foregroundStyle(Color.warmBrown.opacity(0.7))
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 12))
-            }
-            .foregroundStyle(Color.warmBrown)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color.cardBackground)
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.warmBrown.opacity(0.1), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-    
-    private var setBirthdayButton: some View {
-        Button {
-            isShowingBirthdayDatePicker = true
-        } label: {
-            HStack {
-                Image(systemName: "birthday.cake")
-                    .font(.system(size: 16))
-                Text("Birthday")
-                    .font(.keetBody)
-                Spacer()
-                Text(formattedBirthdayDate)
-                    .font(.keetBody)
-                    .foregroundStyle(Color.warmBrown.opacity(0.7))
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 12))
-            }
-            .foregroundStyle(Color.warmBrown)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color.cardBackground)
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.warmBrown.opacity(0.1), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-    
-    
     private var importContactButton: some View {
         Button {
             isShowingContactImport = true
@@ -346,10 +315,17 @@ struct ManualEntryView: View {
                 Image(systemName: "person.crop.circle.badge.plus")
                     .font(.system(size: 16))
                 Text("Import from Contacts")
-                    .font(.keetCaption)
+                    .font(.keetBody)
             }
-            .foregroundStyle(Color.warmBrown)
-            .padding(.vertical, 8)
+            .foregroundStyle(Color.terracotta)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(Color.cardBackground)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.warmBrown.opacity(0.1), lineWidth: 1)
+            )
         }
         .buttonStyle(.plain)
     }
@@ -373,4 +349,42 @@ struct ManualEntryView: View {
         .transition(.scale.combined(with: .opacity))
     }
 }
+
+// MARK: - Settings Style Row Component
+struct SettingsRowButton: View {
+    let icon: String
+    let title: String
+    let value: String
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.system(size: 16))
+                    .foregroundStyle(Color.terracotta)
+                    .frame(width: 24)
+                
+                Text(title)
+                    .font(.keetBody)
+                    .foregroundStyle(Color.warmBrown)
+                
+                Spacer()
+                
+                Text(value)
+                    .font(.keetBody)
+                    .foregroundStyle(Color.warmBrown.opacity(0.6))
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.warmBrown.opacity(0.3))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 

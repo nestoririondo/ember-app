@@ -128,24 +128,16 @@ struct ContactCardView: View {
                 Capsule()
                     .fill(
                         isToday
-                            ? Color(red: 1.0, green: 0.6, blue: 0.3)  // Warm orange for today
-                            : Color.black.opacity(0.5)  // Dark for upcoming
+                            ? Color(red: 1.0, green: 0.6, blue: 0.3)
+                            : Color.black.opacity(0.5)
                     )
             )
             .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
-            .scaleEffect(isToday ? 1.05 : 1.0)
-            .animation(
-                isToday
-                    ? .easeInOut(duration: 1.0).repeatForever(autoreverses: true)
-                    : .default,
-                value: isToday
-            )
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-            .padding(.keetSpacingS)
+            .padding(.top, 8)
+            .padding(.trailing, 8)
         }
     }
-    
-
     
     private var gradientOverlay: some View {
         LinearGradient(

@@ -34,7 +34,7 @@ struct DatePickerView: View {
                 .padding()
             }
             .background(Color.softCream)
-            .navigationTitle(title ?? "Select Date")
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
         }
         .onChange(of: selectedDate) { oldValue, newValue in
