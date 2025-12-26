@@ -23,7 +23,7 @@ struct DatePickerView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
+            VStack {
                 DatePicker(
                     "Select Date",
                     selection: $selectedDate,
@@ -32,14 +32,25 @@ struct DatePickerView: View {
                 )
                 .datePickerStyle(.graphical)
                 .padding()
+                .padding(.horizontal)
+                .padding(.bottom)
             }
             .background(Color.softCream)
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
-        }
-        .onChange(of: selectedDate) { oldValue, newValue in
-            onDateSelected(newValue)
-            dismiss()
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        onDateSelected(selectedDate)
+                        dismiss()
+                    }
+                }
+            }
         }
     }
 }
